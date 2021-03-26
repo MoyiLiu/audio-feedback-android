@@ -9,6 +9,7 @@ buildscript {
         junit = "4.13.2"
         rxJava = "3.0.3"
         rxJavaAndroid = "3.0.0"
+        truth = "1.1.2"
     }
     repositories {
         google()

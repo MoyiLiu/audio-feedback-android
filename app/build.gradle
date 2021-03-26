@@ -44,6 +44,7 @@ dependencies {
     implementation "io.reactivex.rxjava3:rxjava:$rxJava"
 
     testImplementation "junit:junit:$junit"
+    testImplementation "com.google.truth:truth:$truth"
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
