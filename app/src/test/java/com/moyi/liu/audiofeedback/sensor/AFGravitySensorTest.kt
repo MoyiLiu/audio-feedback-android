@@ -3,22 +3,26 @@ package com.moyi.liu.audiofeedback.sensor
 import com.google.common.truth.Truth.assertThat
 import io.reactivex.rxjava3.android.plugins.RxAndroidPlugins
 import io.reactivex.rxjava3.schedulers.Schedulers
-import org.junit.After
-import org.junit.Before
+import org.junit.AfterClass
+import org.junit.BeforeClass
 import org.junit.Test
 
 class AFGravitySensorTest {
 
-    @Before
-    fun setup() {
-        RxAndroidPlugins.setInitMainThreadSchedulerHandler {
-            Schedulers.trampoline()
+    companion object {
+        @BeforeClass
+        @JvmStatic
+        fun setup() {
+            RxAndroidPlugins.setInitMainThreadSchedulerHandler {
+                Schedulers.trampoline()
+            }
         }
-    }
 
-    @After
-    fun teardown() {
-        RxAndroidPlugins.reset()
+        @AfterClass
+        @JvmStatic
+        fun teardown() {
+            RxAndroidPlugins.reset()
+        }
     }
 
     @Test

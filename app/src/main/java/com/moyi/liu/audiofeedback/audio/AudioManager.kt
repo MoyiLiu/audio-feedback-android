@@ -13,6 +13,8 @@ interface AudioManager {
     fun loadSoundTracks(): Completable
     fun startLoopingTracksWithNoVolume()
     fun updateFrontBackTracks(audioContexts: Pair<AudioContext, AudioContext>)
+
+    //TODO: flush/cleanup SoundPool
 }
 
 class AFAudioManager(private val ctx: Context) : AudioManager {
