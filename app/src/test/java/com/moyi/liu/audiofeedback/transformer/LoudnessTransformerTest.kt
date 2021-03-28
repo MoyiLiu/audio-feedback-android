@@ -8,7 +8,7 @@ import kotlin.math.pow
 class LoudnessTransformerTest {
 
     @Test
-    fun transformToLoudnessAudioContext_givenSensorDataValueIsLowerThanMin_volumeShouldBeZero() {
+    fun givenSensorDataValueIsLowerThanMin_volumeShouldBeZero() {
         val boundary = Boundary(1.0f, 3.0f)
         val value = 0.5f
 
@@ -19,7 +19,7 @@ class LoudnessTransformerTest {
     }
 
     @Test
-    fun transformToLoudnessAudioContext_givenSensorDataValueIsLargerThanMax_volumeShouldBeOne() {
+    fun givenSensorDataValueIsLargerThanMax_volumeShouldBeOne() {
         val boundary = Boundary(1.0f, 3.0f)
         val value = 3.1f
 
@@ -30,7 +30,7 @@ class LoudnessTransformerTest {
     }
 
     @Test
-    fun transformToLoudnessAudioContext_givenSensorDataValueIsEqualToMax_volumeShouldBeOne() {
+    fun givenSensorDataValueIsEqualToMax_volumeShouldBeOne() {
         val boundary = Boundary(1.0f, 3.0f)
         val value = 3.0f
 
@@ -41,7 +41,7 @@ class LoudnessTransformerTest {
     }
 
     @Test
-    fun transformToLoudnessAudioContext_givenSensorDataValueInRange_volumeShouldBeSquaredProportional() {
+    fun givenSensorDataValueInRange_volumeShouldBeSquaredProportional() {
         val boundary = Boundary(1.0f, 3.0f)
         val value = 2.0f
 
