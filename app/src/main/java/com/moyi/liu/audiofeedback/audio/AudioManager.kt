@@ -8,7 +8,7 @@ interface AudioManager {
 
     fun loadSoundTracks()
     fun startLoopingTracksWithNoVolume()
-    fun updateFrontBackTracks(audioStreamContexts: Pair<AudioStreamContext, AudioStreamContext>)
+    fun updateFrontBackTracks(audioContexts: Pair<AudioContext, AudioContext>)
 }
 
 class AFAudioManager(private val ctx: Context) : AudioManager {
@@ -28,8 +28,8 @@ class AFAudioManager(private val ctx: Context) : AudioManager {
         soundPool?.play(backTrackId, 0f, 0f, 1, -1, 1f)
     }
 
-    override fun updateFrontBackTracks(audioStreamContexts: Pair<AudioStreamContext, AudioStreamContext>) {
-        val (front, back) = audioStreamContexts
+    override fun updateFrontBackTracks(audioContexts: Pair<AudioContext, AudioContext>) {
+        val (front, back) = audioContexts
         soundPool?.setVolume(frontTrackId, front.volume, front.volume)
         soundPool?.setVolume(backTrackId, back.volume, back.volume)
 
