@@ -8,48 +8,50 @@ import kotlin.math.pow
 class LoudnessTransformerTest {
 
     @Test
-    fun givenSensorDataValueIsLowerThanMin_volumeShouldBeZero() {
-        val boundary = Boundary(1.0f, 3.0f)
+    fun givenSensorDataValueIsSmallerThanMin_volumeShouldBeMin() {
+        val boundary = Boundary(1f, 3f)
         val value = 0.5f
 
         val result = value.transformToLoudnessAudioContext(boundary)
 
-        assertThat(result.volume).isEqualTo(0f)
-        assertThat(result.playRate).isEqualTo(1f)
+        assertThat(result.volume).isEqualTo(MIN_VOLUME)
+        assertThat(result.playRate).isEqualTo(NORMAL_PLAY_RATE)
     }
 
     @Test
-    fun givenSensorDataValueIsLargerThanMax_volumeShouldBeOne() {
-        val boundary = Boundary(1.0f, 3.0f)
+    fun givenSensorDataValueIsLargerThanMax_volumeShouldBeMax() {
+        val boundary = Boundary(1f, 3f)
         val value = 3.1f
 
         val result = value.transformToLoudnessAudioContext(boundary)
 
-        assertThat(result.volume).isEqualTo(1f)
-        assertThat(result.playRate).isEqualTo(1f)
+        assertThat(result.volume).isEqualTo(MAX_VOLUME)
+        assertThat(result.playRate).isEqualTo(NORMAL_PLAY_RATE)
     }
 
     @Test
-    fun givenSensorDataValueIsEqualToMax_volumeShouldBeOne() {
-        val boundary = Boundary(1.0f, 3.0f)
-        val value = 3.0f
+    fun givenSensorDataValueIsEqualToMax_volumeShouldBeMax() {
+        val boundary = Boundary(1f, 3f)
+        val value = 3f
 
         val result = value.transformToLoudnessAudioContext(boundary)
 
-        assertThat(result.volume).isEqualTo(1f)
-        assertThat(result.playRate).isEqualTo(1f)
+        assertThat(result.volume).isEqualTo(MAX_VOLUME)
+        assertThat(result.playRate).isEqualTo(NORMAL_PLAY_RATE)
     }
 
     @Test
     fun givenSensorDataValueInRange_volumeShouldBeSquaredProportional() {
-        val boundary = Boundary(1.0f, 3.0f)
-        val value = 2.0f
+        val boundary = Boundary(1f, 3f)
+        val value = 2f
 
-        val expected = ((2.0f - 1.0f) / (3.0f - 1.0f)).pow(2)
+        val (min, max) = boundary
+
+        val expected = ((value - min) / (max - min)).pow(2)
 
         val result = value.transformToLoudnessAudioContext(boundary)
 
         assertThat(result.volume).isEqualTo(expected)
-        assertThat(result.playRate).isEqualTo(1f)
+        assertThat(result.playRate).isEqualTo(NORMAL_PLAY_RATE)
     }
 }

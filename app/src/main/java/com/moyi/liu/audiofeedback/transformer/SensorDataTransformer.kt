@@ -7,11 +7,23 @@ import kotlin.math.pow
 fun Float.transformToLoudnessAudioContext(boundary: Boundary): AudioContext {
     val (min, max) = boundary
     return when {
-        this < min -> AudioContext(0f, 1f)
-        this >= max -> AudioContext(1f, 1f)
+        this < min -> AudioContext(MIN_VOLUME, NORMAL_PLAY_RATE)
+        this >= max -> AudioContext(MAX_VOLUME, NORMAL_PLAY_RATE)
         else -> AudioContext(
             ((this - min) / (max - min)).pow(2),
-            1f
+            NORMAL_PLAY_RATE
+        )
+    }
+}
+
+fun Float.transformToPlayRateAudioContext(boundary: Boundary): AudioContext {
+    val (min, max) = boundary
+    return when {
+        this < min -> AudioContext(MIN_VOLUME, NORMAL_PLAY_RATE)
+        this >= max -> AudioContext(MAX_VOLUME, MAX_PLAY_RATE)
+        else -> AudioContext(
+            MAX_VOLUME,
+            NORMAL_PLAY_RATE + ((this - min) / (max - min)).pow(2)
         )
     }
 }
