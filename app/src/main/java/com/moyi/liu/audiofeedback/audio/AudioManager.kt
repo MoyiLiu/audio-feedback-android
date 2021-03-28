@@ -3,9 +3,12 @@ package com.moyi.liu.audiofeedback.audio
 import android.content.Context
 import android.media.SoundPool
 import com.moyi.liu.audiofeedback.R
+import java.lang.Exception
+import kotlin.jvm.Throws
 
 interface AudioManager {
 
+    @Throws(FailedToLoadSoundTrackException::class)
     fun loadSoundTracks()
     fun startLoopingTracksWithNoVolume()
     fun updateFrontBackTracks(audioContexts: Pair<AudioContext, AudioContext>)
@@ -17,10 +20,14 @@ class AFAudioManager(private val ctx: Context) : AudioManager {
     private var frontTrackId: Int = 0
     private var backTrackId: Int = 0
 
+    @Throws(FailedToLoadSoundTrackException::class)
     override fun loadSoundTracks() {
         soundPool = SoundPool.Builder().setMaxStreams(MAX_STREAMS).build()
-        frontTrackId = soundPool?.load(ctx, R.raw.guitar_triplet_asc, 1) ?: 0
-        backTrackId = soundPool?.load(ctx, R.raw.clarinet_c4, 1) ?: 0
+        frontTrackId = soundPool?.load(ctx, R.raw.guitar_triplet_asc, 1) ?: Int.MIN_VALUE
+        backTrackId = soundPool?.load(ctx, R.raw.clarinet_c4, 1) ?: Int.MIN_VALUE
+
+        if (frontTrackId == Int.MIN_VALUE) throw FailedToLoadSoundTrackException
+        if (backTrackId == Int.MIN_VALUE) throw FailedToLoadSoundTrackException
     }
 
     override fun startLoopingTracksWithNoVolume() {
@@ -42,3 +49,5 @@ class AFAudioManager(private val ctx: Context) : AudioManager {
     }
 
 }
+
+object FailedToLoadSoundTrackException : Exception()
