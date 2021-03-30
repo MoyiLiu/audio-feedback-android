@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import com.moyi.liu.audiofeedback.audio.AudioManager
 import com.moyi.liu.audiofeedback.sensor.GravitySensor
 import com.moyi.liu.audiofeedback.transformer.SensorDataTransformer
+import com.moyi.liu.audiofeedback.utils.safeDispose
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -23,8 +24,7 @@ class AudioFeedbackHandler(
             .mergeWith(sensor.initialiseSensor())
 
     fun start(): Completable {
-        if (dataStreamDisposable != null && dataStreamDisposable?.isDisposed == false)
-            dataStreamDisposable?.dispose()
+        dataStreamDisposable.safeDispose()
 
         return sensor.register()
             .doOnSubscribe {
@@ -35,6 +35,7 @@ class AudioFeedbackHandler(
     }
 
     fun terminate() {
+        dataStreamDisposable.safeDispose()
         audioManager.releaseAllTracks()
     }
 
