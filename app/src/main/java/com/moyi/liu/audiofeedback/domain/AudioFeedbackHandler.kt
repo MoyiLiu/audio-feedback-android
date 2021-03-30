@@ -16,7 +16,7 @@ class AudioFeedbackHandler(
 ) {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    var dataStreamDisposable: Disposable? = null
+    internal var dataStreamDisposable: Disposable? = null
 
     fun setup(): Completable =
         audioManager.loadSoundTracks()
@@ -31,10 +31,11 @@ class AudioFeedbackHandler(
                 audioManager.startLoopingTracksWithNoVolume()
             }
             .doOnComplete(::subscribeDataStream)
-            .doOnError {
-                //TODO cleanup audio manager
-            }
             .subscribeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun terminate() {
+        audioManager.releaseAllTracks()
     }
 
 

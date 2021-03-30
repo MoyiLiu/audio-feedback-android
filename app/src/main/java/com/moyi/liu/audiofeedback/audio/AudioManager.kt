@@ -13,8 +13,8 @@ interface AudioManager {
     fun loadSoundTracks(): Completable
     fun startLoopingTracksWithNoVolume()
     fun updateFrontBackTracks(audioContexts: Pair<AudioContext, AudioContext>)
+    fun releaseAllTracks()
 
-    //TODO: flush/cleanup SoundPool
 }
 
 class AFAudioManager(private val ctx: Context) : AudioManager {
@@ -47,6 +47,10 @@ class AFAudioManager(private val ctx: Context) : AudioManager {
 
         soundPool?.setRate(frontTrackId, front.playRate)
         soundPool?.setRate(backTrackId, back.playRate)
+    }
+
+    override fun releaseAllTracks() {
+        soundPool?.release()
     }
 
     companion object {

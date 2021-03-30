@@ -5,6 +5,7 @@ import io.reactivex.rxjava3.core.Completable
 open class StubAudioManager : AudioManager {
     val audioContextsList = mutableListOf<Pair<AudioContext, AudioContext>>()
     var isStartLoopingTracksWithNoVolumeCalled = false
+    var isReleaseAllTracksCalled = false
     override fun loadSoundTracks(): Completable = Completable.complete()
 
     override fun startLoopingTracksWithNoVolume() {
@@ -13,5 +14,9 @@ open class StubAudioManager : AudioManager {
 
     override fun updateFrontBackTracks(audioContexts: Pair<AudioContext, AudioContext>) {
         audioContextsList.add(audioContexts)
+    }
+
+    override fun releaseAllTracks() {
+        isReleaseAllTracksCalled = true
     }
 }
