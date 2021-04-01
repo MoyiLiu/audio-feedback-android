@@ -1,9 +1,11 @@
 package com.moyi.liu.audiofeedback.transformer
 
 import com.google.common.truth.Truth.assertThat
-import com.moyi.liu.audiofeedback.audio.AudioContext
-import com.moyi.liu.audiofeedback.sway.Boundary
 import org.junit.Test
+
+import com.moyi.liu.audiofeedback.audio.AudioContext
+import com.moyi.liu.audiofeedback.sensor.SensorBoundary
+import com.moyi.liu.audiofeedback.domain.model.Boundary
 
 class SensorDataTransformerTest {
     @Test
@@ -11,12 +13,13 @@ class SensorDataTransformerTest {
         val boundaries = Boundary(-6f, -2f) to Boundary(2f, 6f)
         val transformer = SensorDataTransformer(
             frontBackAxisInitialValue = 1f,
-            frontBackBoundaries = boundaries
+            frontBackBoundaries = boundaries,
+            boundaryTransformer = StubBoundaryTransformer
         )
 
         val (_, boundary) = boundaries
         val value = 5.5f
-        val expected = value.transformToPlayRateAudioContext(boundary)
+        val expected = value.transformToPlayRateAudioContext(StubBoundaryTransformer(boundary))
         val sensorData = Triple(0f, 0f, value)
 
         val (frontResult, backResult) = transformer.transformForFrontBackTracks(sensorData)
@@ -32,12 +35,13 @@ class SensorDataTransformerTest {
         val boundaries = Boundary(-6f, -2f) to Boundary(2f, 6f)
         val transformer = SensorDataTransformer(
             frontBackAxisInitialValue = 1f,
-            frontBackBoundaries = boundaries
+            frontBackBoundaries = boundaries,
+            boundaryTransformer = StubBoundaryTransformer
         )
 
         val (boundary, _) = boundaries
         val value = -4.5f
-        val expected = value.transformToLoudnessAudioContext(boundary)
+        val expected = value.transformToLoudnessAudioContext(StubBoundaryTransformer(boundary))
         val sensorData = Triple(0f, 0f, value)
 
         val (frontResult, backResult) = transformer.transformForFrontBackTracks(sensorData)

@@ -1,14 +1,14 @@
 package com.moyi.liu.audiofeedback.transformer
 
 import com.google.common.truth.Truth
-import com.moyi.liu.audiofeedback.sway.Boundary
+import com.moyi.liu.audiofeedback.sensor.SensorBoundary
 import org.junit.Test
 import kotlin.math.pow
 
 class PlayRateTransformerTest {
     @Test
     fun givenSensorDataValueIsSmallerThanMin_volumeShouldBeMin() {
-        val boundary = Boundary(1f, 3f)
+        val boundary = SensorBoundary(1f, 3f)
         val value = 0.5f
 
         val result = value.transformToPlayRateAudioContext(boundary)
@@ -18,7 +18,7 @@ class PlayRateTransformerTest {
 
     @Test
     fun givenSensorDataValueIsEqualToMax_playRateShouldBeMax_volumeShouldBeMax() {
-        val boundary = Boundary(1f, 3f)
+        val boundary = SensorBoundary(1f, 3f)
         val value = 3f
 
         val result = value.transformToPlayRateAudioContext(boundary)
@@ -29,7 +29,7 @@ class PlayRateTransformerTest {
 
     @Test
     fun givenSensorDataValueIsLargerThanMax_playRateShouldBeMax_volumeShouldBeMax() {
-        val boundary = Boundary(1f, 3f)
+        val boundary = SensorBoundary(1f, 3f)
         val value = 3.1f
 
         val result = value.transformToPlayRateAudioContext(boundary)
@@ -40,7 +40,7 @@ class PlayRateTransformerTest {
 
     @Test
     fun givenSensorDataValueIsInRange_playRateShouldBeSquaredProportional_volumeShouldBeMax() {
-        val boundary = Boundary(3f, 6f)
+        val boundary = SensorBoundary(3f, 6f)
         val value = 4f
         val (min, max) = boundary
 

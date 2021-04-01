@@ -6,3 +6,5 @@ const val MAX_PLAY_RATE = 2f
 
 const val MAX_VOLUME = 1f
 const val MIN_VOLUME = 0f
+
+const val MAX_GRAVITY_SENSOR_VALUE = 9.81f
