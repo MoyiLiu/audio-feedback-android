@@ -3,10 +3,7 @@ package com.moyi.liu.audiofeedback.transformer
 import com.moyi.liu.audiofeedback.audio.AudioContext
 import com.moyi.liu.audiofeedback.domain.model.Boundary
 import com.moyi.liu.audiofeedback.sensor.SensorBoundary
-import kotlin.math.abs
-import kotlin.math.asin
-import kotlin.math.pow
-import kotlin.math.sin
+import kotlin.math.*
 
 class SensorDataTransformer(
     private val frontBackAxisInitialValue: Float,
@@ -73,8 +70,8 @@ fun Float.gravitySensorValueToAngle(): Float =
         abs(this) > MAX_GRAVITY_SENSOR_VALUE -> MAX_GRAVITY_SENSOR_VALUE
         else -> abs(this)
     }.let { sensorValue ->
-        asin(sensorValue / MAX_GRAVITY_SENSOR_VALUE)
+        asin(sensorValue / MAX_GRAVITY_SENSOR_VALUE) * 180 / PI.toFloat()
     }
 
 fun Float.angleToGravitySensorValue(): Float =
-    sin(this) * MAX_GRAVITY_SENSOR_VALUE
+    sin(this * PI.toFloat() / 180) * MAX_GRAVITY_SENSOR_VALUE
