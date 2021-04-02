@@ -43,7 +43,7 @@ class AudioFeedbackHandler(
     private fun subscribeDataStream() {
         dataStreamDisposable = sensor.sensorDataStream
             .observeOn(Schedulers.io())
-            .map(dataTransformer::transformForFrontBackTracks)
+            .map { (_, _, z) -> dataTransformer.transformForFrontBackTracks(z) }
             .subscribeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { audioContexts ->

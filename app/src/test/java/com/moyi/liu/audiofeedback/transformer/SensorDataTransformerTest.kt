@@ -4,7 +4,6 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 import com.moyi.liu.audiofeedback.audio.AudioContext
-import com.moyi.liu.audiofeedback.sensor.SensorBoundary
 import com.moyi.liu.audiofeedback.domain.model.Boundary
 
 class SensorDataTransformerTest {
@@ -20,9 +19,8 @@ class SensorDataTransformerTest {
         val (_, boundary) = boundaries
         val value = 5.5f
         val expected = value.transformToPlayRateAudioContext(StubBoundaryTransformer(boundary))
-        val sensorData = Triple(0f, 0f, value)
 
-        val (frontResult, backResult) = transformer.transformForFrontBackTracks(sensorData)
+        val (frontResult, backResult) = transformer.transformForFrontBackTracks(value)
 
         assertThat(backResult).isEqualTo(expected)
         assertThat(frontResult).isEqualTo(AudioContext.MUTE)
@@ -42,9 +40,8 @@ class SensorDataTransformerTest {
         val (boundary, _) = boundaries
         val value = -4.5f
         val expected = value.transformToLoudnessAudioContext(StubBoundaryTransformer(boundary))
-        val sensorData = Triple(0f, 0f, value)
 
-        val (frontResult, backResult) = transformer.transformForFrontBackTracks(sensorData)
+        val (frontResult, backResult) = transformer.transformForFrontBackTracks(value)
 
         assertThat(frontResult).isEqualTo(expected)
         assertThat(backResult).isEqualTo(AudioContext.MUTE)

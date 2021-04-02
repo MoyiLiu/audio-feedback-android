@@ -15,18 +15,17 @@ class SensorDataTransformer(
     private val backBoundary = boundaryTransformer(frontBackBoundaries.second)
 
     /**
-     * @param sensorData x,y,z axes values, refer to [https://developer.android.com/reference/android/hardware/SensorEvent]
+     * @param axisSensorValue front-back axis sensor value, refer to [https://developer.android.com/reference/android/hardware/SensorEvent]
      * @return a pair of Font and Back [AudioContext]
      */
-    fun transformForFrontBackTracks(sensorData: Triple<Float, Float, Float>): Pair<AudioContext, AudioContext> {
-        val (_, _, value) = sensorData
-        // value > frontBackAxisInitialValue ==> back
-        // value <= frontBackAxisInitialValue ==> front
+    fun transformForFrontBackTracks(axisSensorValue: Float): Pair<AudioContext, AudioContext> {
+        // axisSensorValue > frontBackAxisInitialValue ==> back
+        // axisSensorValue <= frontBackAxisInitialValue ==> front
         return when {
-            value > frontBackAxisInitialValue ->
-                AudioContext.MUTE to value.transformToPlayRateAudioContext(backBoundary)
+            axisSensorValue > frontBackAxisInitialValue ->
+                AudioContext.MUTE to axisSensorValue.transformToPlayRateAudioContext(backBoundary)
             else ->
-                value.transformToLoudnessAudioContext(frontBoundary) to AudioContext.MUTE
+                axisSensorValue.transformToLoudnessAudioContext(frontBoundary) to AudioContext.MUTE
         }
     }
 }
