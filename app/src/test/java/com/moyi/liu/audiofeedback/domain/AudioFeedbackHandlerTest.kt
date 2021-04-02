@@ -2,12 +2,11 @@ package com.moyi.liu.audiofeedback.domain
 
 import com.google.common.truth.Truth.assertThat
 import com.moyi.liu.audiofeedback.audio.StubAudioManager
+import com.moyi.liu.audiofeedback.domain.model.STUB_BOUNDARY
 import com.moyi.liu.audiofeedback.rx.StubDisposable
 import com.moyi.liu.audiofeedback.sensor.SensorInitialisationFailedException
 import com.moyi.liu.audiofeedback.sensor.SensorNotFoundException
 import com.moyi.liu.audiofeedback.sensor.StubGravitySensor
-import com.moyi.liu.audiofeedback.domain.model.STUB_BOUNDARY
-import com.moyi.liu.audiofeedback.transformer.StubBoundaryTransformer
 import com.moyi.liu.audiofeedback.transformer.SensorDataTransformer
 import io.reactivex.rxjava3.android.plugins.RxAndroidPlugins
 import io.reactivex.rxjava3.core.Completable
@@ -48,9 +47,8 @@ class AudioFeedbackHandlerTest {
         }
 
         val transformer = SensorDataTransformer(
-            frontBackAxisInitialValue = 0f,
-            frontBackBoundaries = STUB_BOUNDARY to STUB_BOUNDARY,
-            boundaryTransformer = StubBoundaryTransformer
+            frontBackAxisOriginValue = 0f,
+            frontBackBoundaries = STUB_BOUNDARY to STUB_BOUNDARY
         )
 
         AudioFeedbackHandler(sensor, StubAudioManager(), transformer)
@@ -62,9 +60,8 @@ class AudioFeedbackHandlerTest {
     @Test
     fun givenDataStreamIsActive_whenCallingStart_shouldDisposeExistingOne() {
         val transformer = SensorDataTransformer(
-            frontBackAxisInitialValue = 0f,
-            frontBackBoundaries = STUB_BOUNDARY to STUB_BOUNDARY,
-            boundaryTransformer = StubBoundaryTransformer
+            frontBackAxisOriginValue = 0f,
+            frontBackBoundaries = STUB_BOUNDARY to STUB_BOUNDARY
         )
 
         val handler = AudioFeedbackHandler(StubGravitySensor(), StubAudioManager(), transformer)
@@ -79,9 +76,8 @@ class AudioFeedbackHandlerTest {
     @Test
     fun givenStartIsCalled_andSensorRegisterFailed_shouldThrowError_andNoDataShouldBePassedToStream() {
         val transformer = SensorDataTransformer(
-            frontBackAxisInitialValue = 0f,
-            frontBackBoundaries = STUB_BOUNDARY to STUB_BOUNDARY,
-            boundaryTransformer = StubBoundaryTransformer
+            frontBackAxisOriginValue = 0f,
+            frontBackBoundaries = STUB_BOUNDARY to STUB_BOUNDARY
         )
 
         val sensor = object : StubGravitySensor() {
@@ -103,9 +99,8 @@ class AudioFeedbackHandlerTest {
     @Test
     fun givenStartIsCalled_DataShouldBePassedToStream() {
         val transformer = SensorDataTransformer(
-            frontBackAxisInitialValue = 0f,
-            frontBackBoundaries = STUB_BOUNDARY to STUB_BOUNDARY,
-            boundaryTransformer = StubBoundaryTransformer
+            frontBackAxisOriginValue = 0f,
+            frontBackBoundaries = STUB_BOUNDARY to STUB_BOUNDARY
         )
 
         val sensor = StubGravitySensor()
