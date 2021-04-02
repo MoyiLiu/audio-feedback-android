@@ -8,7 +8,7 @@ import kotlin.math.*
 class SensorDataTransformer(
     private val frontBackAxisInitialValue: Float,
     frontBackBoundaries: Pair<Boundary, Boundary>, //<Front, Back>
-    boundaryTransformer: BoundaryTransformer
+    inline val boundaryTransformer: BoundaryTransformer
 ) {
 
     private val frontBoundary = boundaryTransformer(frontBackBoundaries.first)
