@@ -1,15 +1,15 @@
 package com.moyi.liu.audiofeedback.transformer
 
 import com.google.common.truth.Truth.assertThat
+import com.moyi.liu.audiofeedback.domain.model.Boundary
 import org.junit.Test
 import kotlin.math.pow
-import com.moyi.liu.audiofeedback.sensor.SensorBoundary
 
 class LoudnessTransformerTest {
 
     @Test
     fun givenSensorDataValueIsSmallerThanMin_volumeShouldBeMin() {
-        val boundary = SensorBoundary(1f, 3f)
+        val boundary = Boundary(1f, 3f)
         val value = 0.5f
 
         val result = value.transformToLoudnessAudioContext(boundary)
@@ -20,7 +20,7 @@ class LoudnessTransformerTest {
 
     @Test
     fun givenSensorDataValueIsLargerThanMax_volumeShouldBeMax() {
-        val boundary = SensorBoundary(1f, 3f)
+        val boundary = Boundary(1f, 3f)
         val value = 3.1f
 
         val result = value.transformToLoudnessAudioContext(boundary)
@@ -31,7 +31,7 @@ class LoudnessTransformerTest {
 
     @Test
     fun givenSensorDataValueIsEqualToMax_volumeShouldBeMax() {
-        val boundary = SensorBoundary(1f, 3f)
+        val boundary = Boundary(1f, 3f)
         val value = 3f
 
         val result = value.transformToLoudnessAudioContext(boundary)
@@ -42,7 +42,7 @@ class LoudnessTransformerTest {
 
     @Test
     fun givenSensorDataValueInRange_volumeShouldBeSquaredProportional() {
-        val boundary = SensorBoundary(1f, 3f)
+        val boundary = Boundary(1f, 3f)
         val value = 2f
 
         val (min, max) = boundary

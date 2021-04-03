@@ -2,46 +2,89 @@ package com.moyi.liu.audiofeedback.transformer
 
 import com.moyi.liu.audiofeedback.audio.AudioContext
 import com.moyi.liu.audiofeedback.domain.model.Boundary
-import com.moyi.liu.audiofeedback.sensor.SensorBoundary
+import com.moyi.liu.audiofeedback.domain.model.Direction
+import com.moyi.liu.audiofeedback.domain.model.PowerAccumulatorConfig
 import kotlin.math.*
 
 class SensorDataTransformer(
-    private val frontBackAxisInitialValue: Float,
+    private val frontBackAxisOriginValue: Float,
     frontBackBoundaries: Pair<Boundary, Boundary>, //<Front, Back>
-    inline val boundaryTransformer: BoundaryTransformer
+    private val leftRightAxisOriginValue: Float,
+    leftRightBoundaries: Pair<Boundary, Boundary>, //<Front, Back>
+    accumulatorConfig: PowerAccumulatorConfig
 ) {
 
-    private val frontBoundary = boundaryTransformer(frontBackBoundaries.first)
-    private val backBoundary = boundaryTransformer(frontBackBoundaries.second)
+    private val frontBoundary: Boundary = frontBackBoundaries.first
+    private val backBoundary: Boundary = frontBackBoundaries.second
+    private val leftBoundary: Boundary = leftRightBoundaries.first
+    private val rightBoundary: Boundary = leftRightBoundaries.second
+
+    //[accumulatorConfig.powerCap + 1] ==>> tiny calibration to avoid division round down to insufficient power, e.g. 10/3 = 3.33, 3.33 * 3 = 9.99 < 10
+    //[MIN_SINGLE_NOTE_PLAY_INTERVAL_MILLIS / accumulatorConfig.intakeIntervalMillis] ==>> number of power data points needed to cover the shortest period of two single note plays
+    val maxPower =
+        (accumulatorConfig.powerCap + 1) / (MIN_SINGLE_NOTE_PLAY_INTERVAL_MILLIS / accumulatorConfig.intakeIntervalMillis)
 
     /**
-     * @param sensorData x,y,z axes values, refer to [https://developer.android.com/reference/android/hardware/SensorEvent]
+     * @param axisSensorValue front-back axis sensor value, refer to [https://developer.android.com/reference/android/hardware/SensorEvent]
      * @return a pair of Font and Back [AudioContext]
      */
-    fun transformForFrontBackTracks(sensorData: Triple<Float, Float, Float>): Pair<AudioContext, AudioContext> {
-        val (_, _, value) = sensorData
-        // value > frontBackAxisInitialValue ==> back
-        // value <= frontBackAxisInitialValue ==> front
+    fun transformForFrontBackTracks(axisSensorValue: Float): Pair<AudioContext, AudioContext> {
+        // axisSensorValue > frontBackAxisInitialValue ==> front
+        // axisSensorValue <= frontBackAxisInitialValue ==> back
+        val angle = abs(axisSensorValue - frontBackAxisOriginValue).gravitySensorValueToAngle()
         return when {
-            value > frontBackAxisInitialValue ->
-                AudioContext.MUTE to value.transformToPlayRateAudioContext(backBoundary)
+            axisSensorValue > frontBackAxisOriginValue ->
+                angle.transformToLoudnessAudioContext(frontBoundary) to AudioContext.MUTE
             else ->
-                value.transformToLoudnessAudioContext(frontBoundary) to AudioContext.MUTE
+                AudioContext.MUTE to angle.transformToPlayRateAudioContext(backBoundary)
+        }
+    }
+
+    fun transformForLeftRightTracks(axisSensorValue: Float): Pair<Direction, Float> {
+        val direction = when {
+            axisSensorValue > leftRightAxisOriginValue -> Direction.LEFT
+            else -> Direction.RIGHT
+        }
+
+        val angle = abs(axisSensorValue - leftRightAxisOriginValue).gravitySensorValueToAngle()
+        when (direction) {
+            Direction.LEFT -> angle.transformToPowerValue(leftBoundary, maxPower)
+            Direction.RIGHT -> angle.transformToPowerValue(rightBoundary, maxPower)
+        }.let { powerValue ->
+            return direction to powerValue
         }
     }
 }
 
-typealias BoundaryTransformer = (Boundary) -> SensorBoundary
-
-val GravitySensorBoundaryTransformer: BoundaryTransformer = { (front, back) ->
-    SensorBoundary(
-        front.angleToGravitySensorValue(),
-        back.angleToGravitySensorValue()
-    )
+/**
+ * Transform sway angle to power value
+ * Using linear trajectory [Play Speed = Sway Angle] (y = x) for now
+ * TODO Investigate other trajectories
+ * Other possibilities:
+ * - y = x^2
+ * - y = exp(2 * x) * 1.37
+ */
+fun Float.transformToPowerValue(
+    boundary: Boundary,
+    maxPower: Float
+): Float {
+    val (min, max) = boundary
+    return when {
+        this < min -> 0f
+        this >= max -> maxPower
+        else -> {
+            maxPower * (this - min) / (max - min)
+        }
+    }
 }
 
-
-fun Float.transformToLoudnessAudioContext(boundary: SensorBoundary): AudioContext {
+/**
+ * Transform sway angle to loudness driven AudioContext
+ * - < min => mute
+ * - Angle increases > min & <= max => loudness increases
+ * - > max => Max volume
+ */
+fun Float.transformToLoudnessAudioContext(boundary: Boundary): AudioContext {
     val (min, max) = boundary
     return when {
         this < min -> AudioContext(MIN_VOLUME, NORMAL_PLAY_RATE)
@@ -53,7 +96,13 @@ fun Float.transformToLoudnessAudioContext(boundary: SensorBoundary): AudioContex
     }
 }
 
-fun Float.transformToPlayRateAudioContext(boundary: SensorBoundary): AudioContext {
+/**
+ * Transform sway angle to play rate driven AudioContext.
+ * - < min => mute
+ * - Angle increases > min & <= max => play rate increases
+ * - > max => Max volume and Max play rate
+ */
+fun Float.transformToPlayRateAudioContext(boundary: Boundary): AudioContext {
     val (min, max) = boundary
     return when {
         this < min -> AudioContext(MIN_VOLUME, NORMAL_PLAY_RATE)
