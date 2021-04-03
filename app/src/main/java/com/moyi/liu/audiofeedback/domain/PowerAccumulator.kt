@@ -1,12 +1,13 @@
 package com.moyi.liu.audiofeedback.domain
 
+import com.moyi.liu.audiofeedback.domain.model.PowerAccumulatorConfig
 import com.moyi.liu.audiofeedback.utils.safeDispose
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 
 class PowerAccumulator(
-    private val powerCap: Float
+    private val config: PowerAccumulatorConfig
 ) {
     val chargeIndicator: PublishSubject<Unit> = PublishSubject.create()
     private val accumulator: PublishSubject<Float> = PublishSubject.create()
@@ -20,7 +21,7 @@ class PowerAccumulator(
                 if (power.isNaN()) return@scan accumulator
 
                 val successor = accumulator + power
-                if (successor >= powerCap) {
+                if (successor >= config.powerCap) {
                     chargeIndicator.onNext(Unit)
                     return@scan 0f
                 }
