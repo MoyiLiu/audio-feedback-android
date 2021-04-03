@@ -11,13 +11,18 @@ class SensorDataTransformer(
     frontBackBoundaries: Pair<Boundary, Boundary>, //<Front, Back>
     private val leftRightAxisOriginValue: Float,
     leftRightBoundaries: Pair<Boundary, Boundary>, //<Front, Back>
-    private val accumulatorConfig: PowerAccumulatorConfig
+    accumulatorConfig: PowerAccumulatorConfig
 ) {
 
     private val frontBoundary: Boundary = frontBackBoundaries.first
     private val backBoundary: Boundary = frontBackBoundaries.second
     private val leftBoundary: Boundary = leftRightBoundaries.first
     private val rightBoundary: Boundary = leftRightBoundaries.second
+
+    //[accumulatorConfig.powerCap + 1] ==>> tiny calibration to avoid division round down to insufficient power, e.g. 10/3 = 3.33, 3.33 * 3 = 9.99 < 10
+    //[MIN_SINGLE_NOTE_PLAY_INTERVAL_MILLIS / accumulatorConfig.intakeIntervalMillis] ==>> number of power data points needed to cover the shortest period of two single note plays
+    val maxPower =
+        (accumulatorConfig.powerCap + 1) / (MIN_SINGLE_NOTE_PLAY_INTERVAL_MILLIS / accumulatorConfig.intakeIntervalMillis)
 
     /**
      * @param axisSensorValue front-back axis sensor value, refer to [https://developer.android.com/reference/android/hardware/SensorEvent]
@@ -43,8 +48,8 @@ class SensorDataTransformer(
 
         val angle = abs(axisSensorValue - leftRightAxisOriginValue).gravitySensorValueToAngle()
         when (direction) {
-            Direction.LEFT -> angle.transformToPowerValue(leftBoundary, accumulatorConfig)
-            Direction.RIGHT -> angle.transformToPowerValue(rightBoundary, accumulatorConfig)
+            Direction.LEFT -> angle.transformToPowerValue(leftBoundary, maxPower)
+            Direction.RIGHT -> angle.transformToPowerValue(rightBoundary, maxPower)
         }.let { powerValue ->
             return direction to powerValue
         }
@@ -61,16 +66,13 @@ class SensorDataTransformer(
  */
 fun Float.transformToPowerValue(
     boundary: Boundary,
-    accumulatorConfig: PowerAccumulatorConfig
+    maxPower: Float
 ): Float {
     val (min, max) = boundary
-    val maxPower = accumulatorConfig.powerCap / MAX_SINGLE_NOTE_PER_SECOND
-
     return when {
         this < min -> 0f
         this >= max -> maxPower
         else -> {
-//            val transformedSingleSensorRead = (this - min) / (max - min)
             maxPower * (this - min) / (max - min)
         }
     }

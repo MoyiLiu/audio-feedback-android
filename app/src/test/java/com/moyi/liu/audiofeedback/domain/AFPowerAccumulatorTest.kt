@@ -1,13 +1,14 @@
 package com.moyi.liu.audiofeedback.domain
 
 import com.moyi.liu.audiofeedback.domain.model.PowerAccumulatorConfig
+import com.moyi.liu.audiofeedback.domain.power.AFPowerAccumulator
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
-class PowerAccumulatorTest {
+class AFPowerAccumulatorTest {
 
     companion object {
         @BeforeClass
@@ -27,7 +28,8 @@ class PowerAccumulatorTest {
 
     @Test
     fun givenEachPowerInputIsTenthOfTheCap_whenReceiveTenInputs_shouldEmitOneChargedSignal() {
-        val acc = PowerAccumulator(PowerAccumulatorConfig(100f, 20)).apply { activate() }
+        val acc =
+            AFPowerAccumulator(PowerAccumulatorConfig(intakePerSecond = 20)).apply { activate() }
 
         val chargeIndicator = acc.chargeIndicator.test()
 
@@ -40,7 +42,7 @@ class PowerAccumulatorTest {
 
     @Test
     fun givenPowerInputIsNotEnough_shouldNotEmitChargedSignal() {
-        val acc = PowerAccumulator(PowerAccumulatorConfig(100f, 20)).apply { activate() }
+        val acc = AFPowerAccumulator(PowerAccumulatorConfig(20)).apply { activate() }
 
         val chargeIndicator = acc.chargeIndicator.test()
 
@@ -53,7 +55,7 @@ class PowerAccumulatorTest {
 
     @Test
     fun givenEachPowerInputIsOverCap_shouldEmitSameNumberOfSignalsAsTheNumberOfInputs() {
-        val acc = PowerAccumulator(PowerAccumulatorConfig(10f, 20)).apply { activate() }
+        val acc = AFPowerAccumulator(PowerAccumulatorConfig(20, 10f)).apply { activate() }
 
         val chargeIndicator = acc.chargeIndicator.test()
 
@@ -66,7 +68,7 @@ class PowerAccumulatorTest {
 
     @Test
     fun givenInconsistentPowerInputs_shouldEmitTwoChargedSignals() {
-        val acc = PowerAccumulator(PowerAccumulatorConfig(10f, 20)).apply { activate() }
+        val acc = AFPowerAccumulator(PowerAccumulatorConfig(20, 10f)).apply { activate() }
 
         val chargeIndicator = acc.chargeIndicator.test()
 
@@ -80,7 +82,7 @@ class PowerAccumulatorTest {
 
     @Test
     fun givenPowerAccumulatorIsHalfCharged_whenReceiveNaN_shouldIgnoreTheInput_andContinue() {
-        val acc = PowerAccumulator(PowerAccumulatorConfig(10f, 20)).apply { activate() }
+        val acc = AFPowerAccumulator(PowerAccumulatorConfig(20, 10f)).apply { activate() }
 
         val chargeIndicator = acc.chargeIndicator.test()
 
@@ -89,5 +91,18 @@ class PowerAccumulatorTest {
         acc.chargeWith(6f)
 
         chargeIndicator.assertValueCount(1)
+    }
+
+    @Test
+    fun givenPowerAccumulatorIsAlmostCharged_whenReceiveEmptySignal_accumulatorIsEmptied() {
+        val acc = AFPowerAccumulator(PowerAccumulatorConfig(20, 10f)).apply { activate() }
+
+        val chargeIndicator = acc.chargeIndicator.test()
+
+        acc.chargeWith(9f)
+        acc.empty()
+        acc.chargeWith(9f)
+
+        chargeIndicator.assertValueCount(0)
     }
 }

@@ -9,9 +9,9 @@ import org.junit.Test
 import kotlin.math.abs
 
 class SensorDataTransformerTest {
-    private val boundaries = Boundary(2f, 6f) to Boundary(2f, 6f)
+    private val boundaries = Boundary(2f, 30f) to Boundary(2f, 30f)
     private val origin = 1f
-    private val accumulatorConfig = PowerAccumulatorConfig(100f, 20)
+    private val accumulatorConfig = PowerAccumulatorConfig(20)
     private val transformer = SensorDataTransformer(
         frontBackAxisOriginValue = origin,
         frontBackBoundaries = boundaries,
@@ -19,6 +19,13 @@ class SensorDataTransformerTest {
         leftRightBoundaries = boundaries,
         accumulatorConfig = accumulatorConfig
     )
+
+    @Test
+    fun maxPowerShould() {
+        val result =
+            ((accumulatorConfig.powerCap + 1) / transformer.maxPower * accumulatorConfig.intakeIntervalMillis).toInt()
+        assertThat(result).isEqualTo(MIN_SINGLE_NOTE_PLAY_INTERVAL_MILLIS)
+    }
 
     @Test
     fun swayBackInRange() {
@@ -60,7 +67,8 @@ class SensorDataTransformerTest {
         val sensorValue = 4.5f
         val sensorDiffValue = sensorValue - origin
         val expectedPower =
-            sensorDiffValue.gravitySensorValueToAngle().transformToPowerValue(boundary, accumulatorConfig)
+            sensorDiffValue.gravitySensorValueToAngle()
+                .transformToPowerValue(boundary, transformer.maxPower)
 
         val (direction, power) = transformer.transformForLeftRightTracks(sensorValue)
 
@@ -75,7 +83,8 @@ class SensorDataTransformerTest {
         val sensorValue = -4.5f
         val sensorDiffValue = sensorValue - origin
         val expectedPower =
-            sensorDiffValue.gravitySensorValueToAngle().transformToPowerValue(boundary, accumulatorConfig)
+            sensorDiffValue.gravitySensorValueToAngle()
+                .transformToPowerValue(boundary, transformer.maxPower)
 
         val (direction, power) = transformer.transformForLeftRightTracks(sensorValue)
 

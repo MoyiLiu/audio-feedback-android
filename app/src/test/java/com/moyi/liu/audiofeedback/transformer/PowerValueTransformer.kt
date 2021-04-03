@@ -7,12 +7,12 @@ import org.junit.Test
 
 class PowerValueTransformer {
     private val boundaries = Boundary(10f, 25f)
-    private val accumulatorConfig = PowerAccumulatorConfig(100f, 20)
+    private val accumulatorConfig = PowerAccumulatorConfig(20)
 
     @Test
     fun givenSwayAngleSmallerThanMin_powerIsZero() {
         val angle = 5f
-        val result = angle.transformToPowerValue(boundaries, accumulatorConfig)
+        val result = angle.transformToPowerValue(boundaries, 34f)
 
         assertThat(result).isEqualTo(0f)
     }
@@ -20,9 +20,9 @@ class PowerValueTransformer {
     @Test
     fun givenSwayAngleIsLargerThanMax_powerIsMax() {
         val angle = 26f
-        val result = angle.transformToPowerValue(boundaries, accumulatorConfig)
+        val result = angle.transformToPowerValue(boundaries, 34f)
 
-        assertThat(result).isEqualTo(accumulatorConfig.powerCap / MAX_SINGLE_NOTE_PER_SECOND)
+        assertThat(result).isEqualTo(34f)
     }
 
     //TODO add tests when sway-angle-power trajectory is finalised
