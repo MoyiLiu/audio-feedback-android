@@ -8,18 +8,20 @@ import java.util.concurrent.TimeUnit
 
 class SensorCalibrator(private val gravitySensor: GravitySensor) {
 
-    private val prepCountdown = 6L
-    fun setCountDownForAttach(onTick: ((Long) -> Unit)? = null): Completable =
-        countDown(prepCountdown, onTick)
+    fun countDownAndPrepareSensor(
+        countDownSeconds: Long,
+        onTick: ((Long) -> Unit)? = null
+    ): Completable =
+        countDown(countDownSeconds, onTick)
             .flatMapCompletable {
                 gravitySensor.initialiseSensor()
             }
 
     fun startCalibration(
-        time: Long,
+        countDownSeconds: Long,
         onTick: ((Long) -> Unit)? = null
     ): Maybe<Pair<Triple<Float, Float, Float>, Int>> {
-        val countdownMaybe = countDown(time, onTick).lastElement()
+        val countdownMaybe = countDown(countDownSeconds, onTick).lastElement()
             .doOnTerminate { gravitySensor.sensorDataStream.onComplete() }
 
         val countdownAndCalibration =
