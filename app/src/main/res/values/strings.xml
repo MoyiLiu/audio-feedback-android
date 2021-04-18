@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">AudioFeedback</string>
+    
+    <!--  Calibration Voiceover  -->
+    <string name="voiceover_calibration_preparation_message">Attach the device to your lower back, calibration will start in %1$d seconds.</string>
+    <string name="voiceover_calibration_start_calibration_message">Calibration will take %1$d seconds and flowed with an ending sound, please stand still. Starting now.</string>
 </resources>
