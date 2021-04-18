@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit
 class SensorCalibrator(private val gravitySensor: GravitySensor) : Calibrator {
 
     override fun countDownAndPrepareSensor(
-        countDownSeconds: Long,
-        onTick: ((Long) -> Unit)?
+        countDownSeconds: Int,
+        onTick: ((Int) -> Unit)?
     ): Completable =
         countDown(countDownSeconds, onTick)
             .flatMapCompletable {
@@ -21,8 +21,8 @@ class SensorCalibrator(private val gravitySensor: GravitySensor) : Calibrator {
             }
 
     override fun startCalibration(
-        countDownSeconds: Long,
-        onTick: ((Long) -> Unit)?
+        countDownSeconds: Int,
+        onTick: ((Int) -> Unit)?
     ): Maybe<CalibrationResult> {
         val countdownMaybe = countDown(countDownSeconds, onTick).lastElement()
             .doOnTerminate { gravitySensor.sensorDataStream.onComplete() }
@@ -51,12 +51,12 @@ class SensorCalibrator(private val gravitySensor: GravitySensor) : Calibrator {
             }
 
     private fun countDown(
-        time: Long,
-        onTick: ((Long) -> Unit)?
+        time: Int,
+        onTick: ((Int) -> Unit)?
     ): Observable<Long> =
         Observable.interval(1, TimeUnit.SECONDS, Schedulers.io())
-            .take(time)
-            .doOnNext { onTick?.invoke(it + 1) }
+            .take(time.toLong())
+            .doOnNext { onTick?.invoke(it.toInt() + 1) }
 
 
 }

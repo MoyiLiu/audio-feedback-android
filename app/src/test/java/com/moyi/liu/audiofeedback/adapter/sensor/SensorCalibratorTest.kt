@@ -39,7 +39,7 @@ class SensorCalibratorTest {
     fun sensorRegistered_receiveSensorDataStream_shouldReturnTheMeanValueOfDataStream() {
         val sensor = StubGravitySensor()
 
-        val countDownRecord = mutableListOf<Long>()
+        val countDownRecord = mutableListOf<Int>()
 
         val sensorCalibrator = SensorCalibrator(sensor)
         val maybe = sensorCalibrator.startCalibration(3) { countDownRecord.add(it) }
@@ -60,6 +60,6 @@ class SensorCalibratorTest {
                 numberOfDataPoints = 3
             )
         )
-        assertThat(countDownRecord).containsExactly(1L, 2L, 3L)
+        assertThat(countDownRecord).containsExactly(1, 2, 3)
     }
 }

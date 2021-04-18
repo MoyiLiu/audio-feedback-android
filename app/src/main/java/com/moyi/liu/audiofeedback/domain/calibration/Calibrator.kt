@@ -6,12 +6,12 @@ import io.reactivex.rxjava3.core.Maybe
 
 interface Calibrator {
     fun countDownAndPrepareSensor(
-        countDownSeconds: Long,
-        onTick: ((Long) -> Unit)? = null
+        countDownSeconds: Int,
+        onTick: ((Int) -> Unit)? = null
     ): Completable
 
     fun startCalibration(
-        countDownSeconds: Long,
-        onTick: ((Long) -> Unit)? = null
+        countDownSeconds: Int,
+        onTick: ((Int) -> Unit)? = null
     ): Maybe<CalibrationResult>
 }
