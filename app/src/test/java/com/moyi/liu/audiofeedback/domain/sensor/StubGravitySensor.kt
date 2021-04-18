@@ -1,6 +1,5 @@
 package com.moyi.liu.audiofeedback.domain.sensor
 
-import com.moyi.liu.audiofeedback.domain.sensor.GravitySensor
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.subjects.PublishSubject
 
