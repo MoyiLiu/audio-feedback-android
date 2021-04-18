@@ -2,6 +2,7 @@ package com.moyi.liu.audiofeedback.adapter.sensor
 
 import com.google.common.truth.Truth.assertThat
 import com.moyi.liu.audiofeedback.domain.sensor.AFGravitySensor
+import com.moyi.liu.audiofeedback.domain.sensor.SensorNotFoundException
 import io.reactivex.rxjava3.android.plugins.RxAndroidPlugins
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.junit.AfterClass

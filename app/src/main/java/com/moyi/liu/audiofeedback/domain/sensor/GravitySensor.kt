@@ -1,4 +1,4 @@
-package com.moyi.liu.audiofeedback.adapter.sensor
+package com.moyi.liu.audiofeedback.domain.sensor
 
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.subjects.PublishSubject

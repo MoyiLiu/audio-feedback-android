@@ -6,7 +6,7 @@ import com.moyi.liu.audiofeedback.domain.model.PowerAccumulatorConfig
 import com.moyi.liu.audiofeedback.domain.model.STUB_BOUNDARY
 import com.moyi.liu.audiofeedback.domain.power.AFPowerAccumulator
 import com.moyi.liu.audiofeedback.domain.power.AFPowerStore
-import com.moyi.liu.audiofeedback.adapter.sensor.StubGravitySensor
+import com.moyi.liu.audiofeedback.domain.sensor.StubGravitySensor
 import com.moyi.liu.audiofeedback.adapter.transformer.MAX_GRAVITY_SENSOR_VALUE
 import com.moyi.liu.audiofeedback.adapter.transformer.MIN_SINGLE_NOTE_PLAY_INTERVAL_MILLIS
 import com.moyi.liu.audiofeedback.adapter.transformer.SensorDataTransformer

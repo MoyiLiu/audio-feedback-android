@@ -1,6 +1,5 @@
 package com.moyi.liu.audiofeedback.domain.sensor
 
-import com.moyi.liu.audiofeedback.adapter.sensor.GravitySensor
 import com.moyi.liu.audiofeedback.adapter.sensor.SystemGravitySensor
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable

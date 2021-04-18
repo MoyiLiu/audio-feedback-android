@@ -4,7 +4,7 @@ import androidx.annotation.VisibleForTesting
 import com.moyi.liu.audiofeedback.adapter.audio.AudioManager
 import com.moyi.liu.audiofeedback.domain.model.Direction
 import com.moyi.liu.audiofeedback.domain.power.PowerStore
-import com.moyi.liu.audiofeedback.adapter.sensor.GravitySensor
+import com.moyi.liu.audiofeedback.domain.sensor.GravitySensor
 import com.moyi.liu.audiofeedback.adapter.transformer.SensorDataTransformer
 import com.moyi.liu.audiofeedback.utils.safeDispose
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers

@@ -7,9 +7,9 @@ import com.moyi.liu.audiofeedback.domain.model.STUB_BOUNDARY
 import com.moyi.liu.audiofeedback.domain.power.StubPowerStore
 import com.moyi.liu.audiofeedback.domain.power.getStubChargedIndicators
 import com.moyi.liu.audiofeedback.rx.StubDisposable
-import com.moyi.liu.audiofeedback.adapter.sensor.SensorInitialisationFailedException
-import com.moyi.liu.audiofeedback.adapter.sensor.SensorNotFoundException
-import com.moyi.liu.audiofeedback.adapter.sensor.StubGravitySensor
+import com.moyi.liu.audiofeedback.domain.sensor.SensorInitialisationFailedException
+import com.moyi.liu.audiofeedback.domain.sensor.SensorNotFoundException
+import com.moyi.liu.audiofeedback.domain.sensor.StubGravitySensor
 import com.moyi.liu.audiofeedback.adapter.transformer.SensorDataTransformer
 import io.reactivex.rxjava3.android.plugins.RxAndroidPlugins
 import io.reactivex.rxjava3.core.Completable

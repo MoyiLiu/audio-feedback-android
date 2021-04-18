@@ -5,6 +5,8 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import com.moyi.liu.audiofeedback.domain.sensor.SensorInitialisationFailedException
+import com.moyi.liu.audiofeedback.domain.sensor.SensorNotFoundException
 import kotlin.jvm.Throws
 
 interface SystemGravitySensor {
