@@ -1,5 +1,7 @@
 package com.moyi.liu.audiofeedback.domain.calibration
 
+import com.moyi.liu.audiofeedback.domain.model.CalibrationResult
+import com.moyi.liu.audiofeedback.domain.model.Origin
 import com.moyi.liu.audiofeedback.domain.sensor.GravitySensor
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Maybe
@@ -7,21 +9,21 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
-class SensorCalibrator(private val gravitySensor: GravitySensor) {
+class SensorCalibrator(private val gravitySensor: GravitySensor) : Calibrator {
 
-    fun countDownAndPrepareSensor(
+    override fun countDownAndPrepareSensor(
         countDownSeconds: Long,
-        onTick: ((Long) -> Unit)? = null
+        onTick: ((Long) -> Unit)?
     ): Completable =
         countDown(countDownSeconds, onTick)
             .flatMapCompletable {
                 gravitySensor.initialiseSensor()
             }
 
-    fun startCalibration(
+    override fun startCalibration(
         countDownSeconds: Long,
-        onTick: ((Long) -> Unit)? = null
-    ): Maybe<Pair<Triple<Float, Float, Float>, Int>> {
+        onTick: ((Long) -> Unit)?
+    ): Maybe<CalibrationResult> {
         val countdownMaybe = countDown(countDownSeconds, onTick).lastElement()
             .doOnTerminate { gravitySensor.sensorDataStream.onComplete() }
 
@@ -31,7 +33,7 @@ class SensorCalibrator(private val gravitySensor: GravitySensor) {
         return gravitySensor.register().andThen(countdownAndCalibration)
     }
 
-    private fun startSensorDataCollection(): Maybe<Pair<Triple<Float, Float, Float>, Int>> =
+    private fun startSensorDataCollection(): Maybe<CalibrationResult> =
         gravitySensor.sensorDataStream
             .map { it to 1 }
             .reduce { (accTriple, counter), (itemTriple, count) ->
@@ -40,7 +42,12 @@ class SensorCalibrator(private val gravitySensor: GravitySensor) {
                 Triple(xa + x, ya + y, za + z) to counter + count
             }
             .map { (sum, count) ->
-                Triple(sum.first / count, sum.second / count, sum.third / count) to count
+                CalibrationResult(
+                    origin = Origin(
+                        sum.first / count, sum.second / count, sum.third / count
+                    ),
+                    numberOfDataPoints = count
+                )
             }
 
     private fun countDown(

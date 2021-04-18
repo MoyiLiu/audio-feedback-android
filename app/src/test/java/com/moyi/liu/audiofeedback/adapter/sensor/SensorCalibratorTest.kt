@@ -2,6 +2,8 @@ package com.moyi.liu.audiofeedback.adapter.sensor
 
 import com.google.common.truth.Truth.assertThat
 import com.moyi.liu.audiofeedback.domain.calibration.SensorCalibrator
+import com.moyi.liu.audiofeedback.domain.model.CalibrationResult
+import com.moyi.liu.audiofeedback.domain.model.Origin
 import com.moyi.liu.audiofeedback.domain.sensor.StubGravitySensor
 import io.reactivex.rxjava3.android.plugins.RxAndroidPlugins
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
@@ -52,7 +54,12 @@ class SensorCalibratorTest {
         assertThat(sensor.sensorDataStream.hasComplete()).isTrue()
 
         observer.assertComplete()
-        observer.assertValue(Triple(3f, 6f, 2f) to 3)
+        observer.assertValue(
+            CalibrationResult(
+                origin = Origin(3f, 6f, 2f),
+                numberOfDataPoints = 3
+            )
+        )
         assertThat(countDownRecord).containsExactly(1L, 2L, 3L)
     }
 }
