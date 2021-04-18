@@ -1,7 +1,7 @@
-package com.moyi.liu.audiofeedback.transformer
+package com.moyi.liu.audiofeedback.adapter.transformer
 
 import com.google.common.truth.Truth.assertThat
-import com.moyi.liu.audiofeedback.audio.AudioContext
+import com.moyi.liu.audiofeedback.domain.model.AudioContext
 import com.moyi.liu.audiofeedback.domain.model.Boundary
 import com.moyi.liu.audiofeedback.domain.model.Direction
 import com.moyi.liu.audiofeedback.domain.model.PowerAccumulatorConfig

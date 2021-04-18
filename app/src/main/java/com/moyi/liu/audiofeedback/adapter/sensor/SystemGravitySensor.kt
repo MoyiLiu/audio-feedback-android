@@ -1,4 +1,4 @@
-package com.moyi.liu.audiofeedback.sensor
+package com.moyi.liu.audiofeedback.adapter.sensor
 
 import android.content.Context
 import android.hardware.Sensor

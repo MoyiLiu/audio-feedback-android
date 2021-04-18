@@ -1,4 +1,4 @@
-package com.moyi.liu.audiofeedback.audio
+package com.moyi.liu.audiofeedback.adapter.audio
 
 import io.reactivex.rxjava3.core.Completable
 

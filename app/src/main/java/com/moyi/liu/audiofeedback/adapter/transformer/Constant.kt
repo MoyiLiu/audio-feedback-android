@@ -1,4 +1,4 @@
-package com.moyi.liu.audiofeedback.transformer
+package com.moyi.liu.audiofeedback.adapter.transformer
 
 const val MIN_PLAY_RATE = 0.5f
 const val NORMAL_PLAY_RATE = 1f

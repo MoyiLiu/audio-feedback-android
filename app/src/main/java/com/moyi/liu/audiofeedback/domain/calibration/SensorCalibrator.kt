@@ -1,5 +1,6 @@
-package com.moyi.liu.audiofeedback.sensor
+package com.moyi.liu.audiofeedback.domain.calibration
 
+import com.moyi.liu.audiofeedback.adapter.sensor.GravitySensor
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Observable

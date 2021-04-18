@@ -1,7 +1,6 @@
-package com.moyi.liu.audiofeedback.domain
+package com.moyi.liu.audiofeedback.domain.power
 
 import com.moyi.liu.audiofeedback.domain.model.PowerAccumulatorConfig
-import com.moyi.liu.audiofeedback.domain.power.AFPowerAccumulator
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.junit.AfterClass

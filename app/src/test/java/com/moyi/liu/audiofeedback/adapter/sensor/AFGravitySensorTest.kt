@@ -1,6 +1,7 @@
-package com.moyi.liu.audiofeedback.sensor
+package com.moyi.liu.audiofeedback.adapter.sensor
 
 import com.google.common.truth.Truth.assertThat
+import com.moyi.liu.audiofeedback.domain.sensor.AFGravitySensor
 import io.reactivex.rxjava3.android.plugins.RxAndroidPlugins
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.junit.AfterClass

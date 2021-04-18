@@ -1,7 +1,7 @@
-package com.moyi.liu.audiofeedback.audio
+package com.moyi.liu.audiofeedback.domain.model
 
-import com.moyi.liu.audiofeedback.transformer.MIN_VOLUME
-import com.moyi.liu.audiofeedback.transformer.NORMAL_PLAY_RATE
+import com.moyi.liu.audiofeedback.adapter.transformer.MIN_VOLUME
+import com.moyi.liu.audiofeedback.adapter.transformer.NORMAL_PLAY_RATE
 
 /**
  * @param volume range 0.0 to 1.0

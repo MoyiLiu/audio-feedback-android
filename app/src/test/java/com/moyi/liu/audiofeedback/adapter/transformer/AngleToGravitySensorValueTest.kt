@@ -1,4 +1,4 @@
-package com.moyi.liu.audiofeedback.transformer
+package com.moyi.liu.audiofeedback.adapter.transformer
 
 import com.google.common.truth.Truth
 import org.junit.Test
@@ -7,7 +7,7 @@ import org.junit.runners.Parameterized
 import kotlin.math.sqrt
 
 @RunWith(Parameterized::class)
-class AngleToGravitySensorValue(
+class AngleToGravitySensorValueTest(
     private val angle: Float,
     private val expectedSensorValue: Float
 ) {

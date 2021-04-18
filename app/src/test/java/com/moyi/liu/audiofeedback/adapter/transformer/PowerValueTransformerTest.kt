@@ -1,11 +1,11 @@
-package com.moyi.liu.audiofeedback.transformer
+package com.moyi.liu.audiofeedback.adapter.transformer
 
 import com.google.common.truth.Truth.assertThat
 import com.moyi.liu.audiofeedback.domain.model.Boundary
 import com.moyi.liu.audiofeedback.domain.model.PowerAccumulatorConfig
 import org.junit.Test
 
-class PowerValueTransformer {
+class PowerValueTransformerTest {
     private val boundaries = Boundary(10f, 25f)
     private val accumulatorConfig = PowerAccumulatorConfig(20)
 

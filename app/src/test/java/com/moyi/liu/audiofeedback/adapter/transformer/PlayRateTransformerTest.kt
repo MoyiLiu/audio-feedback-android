@@ -1,4 +1,4 @@
-package com.moyi.liu.audiofeedback.transformer
+package com.moyi.liu.audiofeedback.adapter.transformer
 
 import com.google.common.truth.Truth
 import com.moyi.liu.audiofeedback.domain.model.Boundary
