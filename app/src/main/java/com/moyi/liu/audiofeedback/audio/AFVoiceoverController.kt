@@ -31,7 +31,7 @@ class AFVoiceoverController(
             .doOnComplete {
                 tts?.run {
                     language = Locale.UK
-                    setSpeechRate(1.8f)
+                    setSpeechRate(1.5f)
                     setOnUtteranceProgressListener(this@AFVoiceoverController)
                 }
             }
@@ -40,19 +40,22 @@ class AFVoiceoverController(
         tts?.speak(message, type.toTextToSpeechType(), null, message.toUtteranceId())
     }
 
-    override fun speakWith(message: String, type: VoiceoverController.SpeechType): Completable =
-        Completable.create { emitter ->
-            val id = message.toUtteranceId()
-            val queueResult =
-                tts?.speak(message, type.toTextToSpeechType(), null, id)
+    override fun speakWith(
+        message: String,
+        type: VoiceoverController.SpeechType,
+        timeoutMillis: Long
+    ): Completable = Completable.create { emitter ->
+        val id = message.toUtteranceId()
+        val queueResult =
+            tts?.speak(message, type.toTextToSpeechType(), null, id)
 
-            if (queueResult == TextToSpeech.SUCCESS) {
-                speeches[id]?.onError(VoiceoverController.InterruptedError)
-                speeches[message.toUtteranceId()] = emitter
-            } else {
-                emitter.onError(VoiceoverController.QueuingError)
-            }
+        if (queueResult == TextToSpeech.SUCCESS) {
+            speeches[id]?.onError(VoiceoverController.InterruptedError)
+            speeches[message.toUtteranceId()] = emitter
+        } else {
+            emitter.onError(VoiceoverController.QueuingError)
         }
+    }.timeout(timeoutMillis, TimeUnit.MILLISECONDS)
 
     override fun destroy() {
         for (e in speeches.values) {
