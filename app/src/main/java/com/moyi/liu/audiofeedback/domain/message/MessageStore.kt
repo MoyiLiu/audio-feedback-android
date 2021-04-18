@@ -1,4 +1,4 @@
-package com.moyi.liu.audiofeedback.domain
+package com.moyi.liu.audiofeedback.domain.message
 
 import com.moyi.liu.audiofeedback.domain.model.Message
 

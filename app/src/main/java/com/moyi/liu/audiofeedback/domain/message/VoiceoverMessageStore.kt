@@ -1,4 +1,4 @@
-package com.moyi.liu.audiofeedback.domain
+package com.moyi.liu.audiofeedback.domain.message
 
 import android.content.Context
 import com.moyi.liu.audiofeedback.domain.model.CalibrationVoiceoverMessage
