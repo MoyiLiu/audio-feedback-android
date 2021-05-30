@@ -1,11 +1,13 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.moyi.liu.audiofeedback"
@@ -39,6 +41,9 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$androidx_appcompat"
     implementation "com.google.android.material:material:$android_material"
     implementation "androidx.constraintlayout:constraintlayout:$contraint_layout"
+
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-compiler:$hilt_version"
 
     implementation "io.reactivex.rxjava3:rxandroid:$rxJavaAndroid"
     implementation "io.reactivex.rxjava3:rxjava:$rxJava"
