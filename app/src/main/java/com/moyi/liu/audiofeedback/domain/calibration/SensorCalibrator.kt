@@ -8,8 +8,11 @@ import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class SensorCalibrator(private val gravitySensor: GravitySensor) : Calibrator {
+class SensorCalibrator @Inject constructor(
+    private val gravitySensor: GravitySensor
+) : Calibrator {
 
     override fun countDownAndPrepareSensor(
         countDownSeconds: Int,

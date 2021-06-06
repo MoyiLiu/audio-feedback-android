@@ -8,8 +8,9 @@ import com.moyi.liu.audiofeedback.domain.model.CalibrationResult
 import com.moyi.liu.audiofeedback.domain.model.CalibrationVoiceoverMessage
 import io.reactivex.rxjava3.core.Single
 import java.lang.IllegalArgumentException
+import javax.inject.Inject
 
-class CalibrationUseCase(
+class CalibrationUseCase @Inject constructor(
     private val messageStore: MessageStore,
     private val calibrator: Calibrator,
     private val voiceoverController: VoiceoverController,

@@ -2,15 +2,15 @@ package com.moyi.liu.audiofeedback.domain
 
 import com.google.common.truth.Truth.assertThat
 import com.moyi.liu.audiofeedback.adapter.audio.StubAudioManager
+import com.moyi.liu.audiofeedback.adapter.transformer.SensorDataTransformer
 import com.moyi.liu.audiofeedback.domain.model.PowerAccumulatorConfig
 import com.moyi.liu.audiofeedback.domain.model.STUB_BOUNDARY
 import com.moyi.liu.audiofeedback.domain.power.StubPowerStore
 import com.moyi.liu.audiofeedback.domain.power.getStubChargedIndicators
-import com.moyi.liu.audiofeedback.rx.StubDisposable
 import com.moyi.liu.audiofeedback.domain.sensor.SensorInitialisationFailedException
 import com.moyi.liu.audiofeedback.domain.sensor.SensorNotFoundException
 import com.moyi.liu.audiofeedback.domain.sensor.StubGravitySensor
-import com.moyi.liu.audiofeedback.adapter.transformer.SensorDataTransformer
+import com.moyi.liu.audiofeedback.rx.StubDisposable
 import io.reactivex.rxjava3.android.plugins.RxAndroidPlugins
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
@@ -61,7 +61,11 @@ class AudioFeedbackHandlerFrontBackTracksTest {
             )
         }
 
-        AudioFeedbackHandler(sensor, audioManager, transformer, powerStore)
+        AudioFeedbackHandler(sensor, audioManager)
+            .also {
+                it.powerStore = powerStore
+                it.dataTransformer = transformer
+            }
             .setup()
             .test()
             .assertError(SensorInitialisationFailedException)
@@ -71,7 +75,11 @@ class AudioFeedbackHandlerFrontBackTracksTest {
     @Test
     fun givenDataStreamIsActive_whenCallingStart_shouldDisposeExistingOne() {
         val handler =
-            AudioFeedbackHandler(StubGravitySensor(), audioManager, transformer, powerStore)
+            AudioFeedbackHandler(StubGravitySensor(), audioManager)
+                .also {
+                    it.powerStore = powerStore
+                    it.dataTransformer = transformer
+                }
         val disposable = StubDisposable()
         handler.dataStreamDisposable = disposable
 
@@ -85,7 +93,11 @@ class AudioFeedbackHandlerFrontBackTracksTest {
         val sensor = object : StubGravitySensor() {
             override fun register(): Completable = Completable.error(SensorNotFoundException)
         }
-        val handler = AudioFeedbackHandler(sensor, audioManager, transformer, powerStore)
+        val handler = AudioFeedbackHandler(sensor, audioManager)
+            .also {
+                it.powerStore = powerStore
+                it.dataTransformer = transformer
+            }
 
         handler.start()
             .test()
@@ -104,7 +116,11 @@ class AudioFeedbackHandlerFrontBackTracksTest {
     fun givenStartIsCalled_DataShouldBePassedToStream() {
         val sensor = StubGravitySensor()
 
-        AudioFeedbackHandler(sensor, audioManager, transformer, powerStore)
+        AudioFeedbackHandler(sensor, audioManager)
+            .also {
+                it.powerStore = powerStore
+                it.dataTransformer = transformer
+            }
             .start()
             .test()
 
