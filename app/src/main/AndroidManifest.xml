@@ -8,12 +8,15 @@
         </intent>
     </queries>
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
     <application
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AudioFeedback">
+        android:theme="@style/Theme.AudioFeedback"
+        android:name=".app.AFApplication">
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">
@@ -23,6 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name=".app.AFService"/>
     </application>
 
 </manifest>
