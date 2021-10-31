@@ -10,7 +10,7 @@ class SensorDataTransformer(
     private val frontBackAxisOriginValue: Float,
     frontBackBoundaries: Pair<Boundary, Boundary>, //<Front, Back>
     private val leftRightAxisOriginValue: Float,
-    leftRightBoundaries: Pair<Boundary, Boundary>, //<Front, Back>
+    leftRightBoundaries: Pair<Boundary, Boundary>, //<Left, Right>
     accumulatorConfig: PowerAccumulatorConfig
 ) {
 
