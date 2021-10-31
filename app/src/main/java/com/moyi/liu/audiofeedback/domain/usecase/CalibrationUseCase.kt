@@ -19,7 +19,10 @@ class CalibrationUseCase @Inject constructor(
     fun startCalibration(): Single<CalibrationResult> =
         voiceoverController.initialise()
             .andThen(
-                voiceoverController.speakWith(getPreparationMessage())
+                voiceoverController.speakWith(
+                    message = getPreparationMessage(),
+                    timeoutMillis = 6000
+                )
             )
             .andThen(
                 calibrator.countDownAndPrepareSensor(calibrationConfig.preparationTimeInSeconds) {
@@ -29,7 +32,10 @@ class CalibrationUseCase @Inject constructor(
                     voiceoverController.speakOut(calibrationConfig.preparationTimeInSeconds.toString())
                 }
             ).andThen(
-                voiceoverController.speakWith(getStartCalibrationMessage())
+                voiceoverController.speakWith(
+                    message = getStartCalibrationMessage(),
+                    timeoutMillis = 6000
+                )
             ).andThen(
                 calibrator.startCalibration(calibrationConfig.calibrationDurationInSeconds) {
                     val second = calibrationConfig.calibrationDurationInSeconds - it
