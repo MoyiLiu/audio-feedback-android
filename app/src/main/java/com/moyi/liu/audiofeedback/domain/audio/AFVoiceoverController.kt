@@ -31,7 +31,7 @@ class AFVoiceoverController(
             .doOnComplete {
                 tts?.run {
                     language = Locale.UK
-                    setSpeechRate(1.5f)
+                    setSpeechRate(1.3f)
                     setOnUtteranceProgressListener(this@AFVoiceoverController)
                 }
             }
@@ -59,7 +59,8 @@ class AFVoiceoverController(
 
     override fun destroy() {
         for (e in speeches.values) {
-            e.onError(VoiceoverController.InterruptedError)
+            if(!e.isDisposed)
+                e.onError(VoiceoverController.InterruptedError)
         }
         speeches.clear()
 
