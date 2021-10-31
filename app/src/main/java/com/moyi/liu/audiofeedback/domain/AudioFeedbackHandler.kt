@@ -7,6 +7,7 @@ import com.moyi.liu.audiofeedback.domain.model.Direction
 import com.moyi.liu.audiofeedback.domain.power.PowerAccumulator
 import com.moyi.liu.audiofeedback.domain.power.PowerStore
 import com.moyi.liu.audiofeedback.domain.sensor.GravitySensor
+import com.moyi.liu.audiofeedback.domain.usecase.CalibrationUseCase
 import com.moyi.liu.audiofeedback.utils.safeDispose
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
@@ -17,7 +18,8 @@ import java.lang.IllegalStateException
 
 class AudioFeedbackHandler(
     private val sensor: GravitySensor,
-    private val audioManager: AudioManager
+    private val audioManager: AudioManager,
+    private val calibrationUseCase: CalibrationUseCase
 ) {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

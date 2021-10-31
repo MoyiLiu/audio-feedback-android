@@ -5,6 +5,7 @@ import android.content.Context
 import com.moyi.liu.audiofeedback.adapter.audio.AudioManager
 import com.moyi.liu.audiofeedback.domain.AudioFeedbackHandler
 import com.moyi.liu.audiofeedback.domain.sensor.GravitySensor
+import com.moyi.liu.audiofeedback.domain.usecase.CalibrationUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -21,8 +22,9 @@ class AudioFeedbackModule {
     @Provides
     fun provideAudioFeedbackHandler(
         sensor: GravitySensor,
-        audioManager: AudioManager
-    ): AudioFeedbackHandler = AudioFeedbackHandler(sensor, audioManager)
+        audioManager: AudioManager,
+        calibrationUseCase: CalibrationUseCase
+    ): AudioFeedbackHandler = AudioFeedbackHandler(sensor, audioManager, calibrationUseCase)
 }
 
 
