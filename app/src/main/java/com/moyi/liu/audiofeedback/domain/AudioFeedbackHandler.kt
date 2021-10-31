@@ -3,7 +3,11 @@ package com.moyi.liu.audiofeedback.domain
 import androidx.annotation.VisibleForTesting
 import com.moyi.liu.audiofeedback.adapter.audio.AudioManager
 import com.moyi.liu.audiofeedback.adapter.transformer.SensorDataTransformer
+import com.moyi.liu.audiofeedback.domain.model.Boundary
 import com.moyi.liu.audiofeedback.domain.model.Direction
+import com.moyi.liu.audiofeedback.domain.model.PowerAccumulatorConfig
+import com.moyi.liu.audiofeedback.domain.power.AFPowerAccumulator
+import com.moyi.liu.audiofeedback.domain.power.AFPowerStore
 import com.moyi.liu.audiofeedback.domain.power.PowerAccumulator
 import com.moyi.liu.audiofeedback.domain.power.PowerStore
 import com.moyi.liu.audiofeedback.domain.sensor.GravitySensor
@@ -64,6 +68,28 @@ class AudioFeedbackHandler(
         audioManager.loadSoundTracks()
             .mergeWith(sensor.initialiseSensor())
             .subscribeOn(AndroidSchedulers.mainThread())
+
+    fun calibrate(): Completable =
+        calibrationUseCase.startCalibration()
+            .doOnSuccess { (origin, numOfDataPoints) ->
+                val powerAccumulatorConfig = PowerAccumulatorConfig(
+                    intakePerSecond = numOfDataPoints / calibrationUseCase.calibrationConfig.calibrationDurationInSeconds,
+                )
+                _powerStore = AFPowerStore(
+                    leftPowerAccumulator = AFPowerAccumulator(powerAccumulatorConfig),
+                    rightPowerAccumulator = AFPowerAccumulator(powerAccumulatorConfig)
+                )
+                _dataTransformer = SensorDataTransformer(
+                    frontBackAxisOriginValue = origin.x,
+                    leftRightAxisOriginValue = origin.y,
+                    //TODO check angles
+                    frontBackBoundaries = Boundary(14f, 24f) to Boundary(10f, 20f),
+                    leftRightBoundaries = Boundary(10f, 30f) to Boundary(10f, 30f),
+                    accumulatorConfig = powerAccumulatorConfig
+                )
+            }
+            .subscribeOn(Schedulers.io())
+            .ignoreElement()
 
     /**
      * Prep work

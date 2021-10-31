@@ -14,7 +14,7 @@ class CalibrationUseCase @Inject constructor(
     private val messageStore: MessageStore,
     private val calibrator: Calibrator,
     private val voiceoverController: VoiceoverController,
-    private val calibrationConfig: CalibrationConfig
+    val calibrationConfig: CalibrationConfig
 ) {
     fun startCalibration(): Single<CalibrationResult> =
         voiceoverController.initialise()
