@@ -7,7 +7,6 @@ import com.moyi.liu.audiofeedback.domain.model.CalibrationConfig
 import com.moyi.liu.audiofeedback.domain.model.CalibrationResult
 import com.moyi.liu.audiofeedback.domain.model.CalibrationVoiceoverMessage
 import io.reactivex.rxjava3.core.Single
-import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
 class CalibrationUseCase @Inject constructor(
@@ -50,9 +49,9 @@ class CalibrationUseCase @Inject constructor(
 
     private fun getPreparationMessage(): String = messageStore.getMessage(
         CalibrationVoiceoverMessage.Preparation(calibrationConfig.preparationTimeInSeconds)
-    ) ?: throw IllegalArgumentException("Empty voiceover calibration preparation message")
+    )
 
     private fun getStartCalibrationMessage(): String = messageStore.getMessage(
         CalibrationVoiceoverMessage.StartCalibration(calibrationConfig.calibrationDurationInSeconds)
-    ) ?: throw IllegalArgumentException("Empty voiceover start calibration message")
+    )
 }
