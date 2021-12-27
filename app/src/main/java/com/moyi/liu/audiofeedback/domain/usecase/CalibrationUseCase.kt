@@ -42,7 +42,8 @@ class CalibrationUseCase @Inject constructor(
                 }.doOnSubscribe {
                     voiceoverController.speakOut(calibrationConfig.calibrationDurationInSeconds.toString())
                 }
-            ).toSingle()
+            )
+            .toSingle()
             .doAfterTerminate {
                 voiceoverController.destroy()
             }

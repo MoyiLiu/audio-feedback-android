@@ -51,8 +51,6 @@ class SensorCalibratorTest {
 
         scheduler.advanceTimeBy(4L, TimeUnit.SECONDS)
 
-        assertThat(sensor.sensorDataStream.hasComplete()).isTrue()
-
         observer.assertComplete()
         observer.assertValue(
             CalibrationResult(

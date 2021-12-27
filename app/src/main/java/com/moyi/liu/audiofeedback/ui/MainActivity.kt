@@ -1,10 +1,10 @@
 package com.moyi.liu.audiofeedback.ui
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.moyi.liu.audiofeedback.R
+import androidx.appcompat.app.AppCompatActivity
 import com.moyi.liu.audiofeedback.app.AFService
+import com.moyi.liu.audiofeedback.app.Action
 import com.moyi.liu.audiofeedback.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,7 +19,20 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.clickButton.setOnClickListener {
-            startForegroundService(Intent(this@MainActivity, AFService::class.java))
+            startForegroundService(
+                Intent(this@MainActivity, AFService::class.java)
+                    .apply { action = Action.START_FOREGROUND_SERVICE }
+            )
         }
+    }
+
+    override fun onDestroy() {
+        startService(
+            Intent(this@MainActivity, AFService::class.java)
+                .apply {
+                    action = Action.STOP_FOREGROUND_SERVICE
+                }
+        )
+        super.onDestroy()
     }
 }

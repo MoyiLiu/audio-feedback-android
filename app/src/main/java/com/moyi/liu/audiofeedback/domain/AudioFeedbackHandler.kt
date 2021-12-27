@@ -18,7 +18,6 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
-import java.lang.IllegalStateException
 
 class AudioFeedbackHandler(
     private val sensor: GravitySensor,
@@ -38,8 +37,8 @@ class AudioFeedbackHandler(
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal var rightChargedIndicatorStreamDisposable: Disposable? = null
 
-    val isPowerStoreInitialised: Boolean = this::_powerStore.isInitialized
-    val isDataTransformerInitialised: Boolean = this::_dataTransformer.isInitialized
+    val isPowerStoreInitialised: Boolean get() = this::_powerStore.isInitialized
+    val isDataTransformerInitialised: Boolean get() = this::_dataTransformer.isInitialized
 
     var powerStore: PowerStore
         get() = _powerStore
@@ -81,7 +80,7 @@ class AudioFeedbackHandler(
                 )
                 _dataTransformer = SensorDataTransformer(
                     frontBackAxisOriginValue = origin.x,
-                    leftRightAxisOriginValue = origin.y,
+                    leftRightAxisOriginValue = origin.z,
                     //TODO check angles
                     frontBackBoundaries = Boundary(14f, 24f) to Boundary(10f, 20f),
                     leftRightBoundaries = Boundary(10f, 30f) to Boundary(10f, 30f),
@@ -181,7 +180,9 @@ class AudioFeedbackHandler(
         leftChargedIndicatorStreamDisposable = _powerStore.chargedIndicators[0]
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { audioManager.updateLeftRightTracks(Direction.LEFT) }, {
+                {
+                    audioManager.updateLeftRightTracks(Direction.LEFT)
+                }, {
                     //ignore error
                 })
 
