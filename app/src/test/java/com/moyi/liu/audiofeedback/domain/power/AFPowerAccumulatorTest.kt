@@ -28,7 +28,7 @@ class AFPowerAccumulatorTest {
     @Test
     fun givenEachPowerInputIsTenthOfTheCap_whenReceiveTenInputs_shouldEmitOneChargedSignal() {
         val acc =
-            AFPowerAccumulator(PowerAccumulatorConfig(intakePerSecond = 20)).apply { activate() }
+            AFPowerAccumulator(PowerAccumulatorConfig(20)).apply { activate() }
 
         val chargeIndicator = acc.chargeIndicator.test()
 

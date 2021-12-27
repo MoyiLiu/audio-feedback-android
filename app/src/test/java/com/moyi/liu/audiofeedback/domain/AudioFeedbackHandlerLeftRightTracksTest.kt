@@ -2,14 +2,19 @@ package com.moyi.liu.audiofeedback.domain
 
 import com.google.common.truth.Truth.assertThat
 import com.moyi.liu.audiofeedback.adapter.audio.StubAudioManager
+import com.moyi.liu.audiofeedback.adapter.transformer.MAX_GRAVITY_SENSOR_VALUE
+import com.moyi.liu.audiofeedback.adapter.transformer.MIN_SINGLE_NOTE_PLAY_INTERVAL_MILLIS
+import com.moyi.liu.audiofeedback.adapter.transformer.SensorDataTransformer
+import com.moyi.liu.audiofeedback.domain.calibration.SensorCalibrator
+import com.moyi.liu.audiofeedback.domain.model.CalibrationConfig
 import com.moyi.liu.audiofeedback.domain.model.PowerAccumulatorConfig
 import com.moyi.liu.audiofeedback.domain.model.STUB_BOUNDARY
 import com.moyi.liu.audiofeedback.domain.power.AFPowerAccumulator
 import com.moyi.liu.audiofeedback.domain.power.AFPowerStore
 import com.moyi.liu.audiofeedback.domain.sensor.StubGravitySensor
-import com.moyi.liu.audiofeedback.adapter.transformer.MAX_GRAVITY_SENSOR_VALUE
-import com.moyi.liu.audiofeedback.adapter.transformer.MIN_SINGLE_NOTE_PLAY_INTERVAL_MILLIS
-import com.moyi.liu.audiofeedback.adapter.transformer.SensorDataTransformer
+import com.moyi.liu.audiofeedback.domain.usecase.CalibrationUseCase
+import com.moyi.liu.audiofeedback.stub.StubMessageStore
+import com.moyi.liu.audiofeedback.stub.StubVoiceoverController
 import io.reactivex.rxjava3.android.plugins.RxAndroidPlugins
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -52,14 +57,24 @@ class AudioFeedbackHandlerLeftRightTracksTest {
     private val gravitySensor = StubGravitySensor()
     private val audioManager = StubAudioManager()
 
+    private val calibrationUseCase = CalibrationUseCase(
+        messageStore = StubMessageStore(),
+        calibrator = SensorCalibrator(StubGravitySensor()),
+        voiceoverController = StubVoiceoverController(),
+        calibrationConfig = CalibrationConfig(2, 3)
+    )
+
     @Test
     fun shouldReceiveLeftChargedSignal() {
         val handler = AudioFeedbackHandler(
             sensor = gravitySensor,
             audioManager = audioManager,
-            transformer,
-            powerStore
-        )
+            calibrationUseCase = calibrationUseCase
+        ).also {
+            it.powerStore = powerStore
+            it.dataTransformer = transformer
+        }
+
         handler.setup().test()
         handler.start().test()
 
@@ -78,9 +93,12 @@ class AudioFeedbackHandlerLeftRightTracksTest {
         val handler = AudioFeedbackHandler(
             sensor = gravitySensor,
             audioManager = audioManager,
-            transformer,
-            powerStore
-        )
+            calibrationUseCase = calibrationUseCase
+        ).also {
+            it.powerStore = powerStore
+            it.dataTransformer = transformer
+        }
+
         handler.setup().test()
         handler.start().test()
 

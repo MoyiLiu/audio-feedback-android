@@ -8,7 +8,7 @@ interface VoiceoverController {
     /** Attempt to speak out the message regardless the results */
     fun speakOut(message: String, type: SpeechType = SpeechType.QUEUE)
     /** Attempt to speak out the message with a result response */
-    fun speakWith(message: String, type: SpeechType = SpeechType.QUEUE, timeoutMillis: Long = 3000L): Completable
+    fun speakWith(message: String, type: SpeechType = SpeechType.QUEUE, timeoutMillis: Long): Completable
     /** Clean up the resources */
     fun destroy()
 

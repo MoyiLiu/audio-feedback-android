@@ -2,10 +2,16 @@ package com.moyi.liu.audiofeedback.domain
 
 import androidx.annotation.VisibleForTesting
 import com.moyi.liu.audiofeedback.adapter.audio.AudioManager
+import com.moyi.liu.audiofeedback.adapter.transformer.SensorDataTransformer
+import com.moyi.liu.audiofeedback.domain.model.Boundary
 import com.moyi.liu.audiofeedback.domain.model.Direction
+import com.moyi.liu.audiofeedback.domain.model.PowerAccumulatorConfig
+import com.moyi.liu.audiofeedback.domain.power.AFPowerAccumulator
+import com.moyi.liu.audiofeedback.domain.power.AFPowerStore
+import com.moyi.liu.audiofeedback.domain.power.PowerAccumulator
 import com.moyi.liu.audiofeedback.domain.power.PowerStore
 import com.moyi.liu.audiofeedback.domain.sensor.GravitySensor
-import com.moyi.liu.audiofeedback.adapter.transformer.SensorDataTransformer
+import com.moyi.liu.audiofeedback.domain.usecase.CalibrationUseCase
 import com.moyi.liu.audiofeedback.utils.safeDispose
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
@@ -16,8 +22,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 class AudioFeedbackHandler(
     private val sensor: GravitySensor,
     private val audioManager: AudioManager,
-    private val dataTransformer: SensorDataTransformer,
-    private val powerStore: PowerStore
+    private val calibrationUseCase: CalibrationUseCase
 ) {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -32,6 +37,26 @@ class AudioFeedbackHandler(
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal var rightChargedIndicatorStreamDisposable: Disposable? = null
 
+    val isPowerStoreInitialised: Boolean get() = this::_powerStore.isInitialized
+    val isDataTransformerInitialised: Boolean get() = this::_dataTransformer.isInitialized
+
+    var powerStore: PowerStore
+        get() = _powerStore
+        set(value) {
+            if (this::_powerStore.isInitialized) throw IllegalStateException("PowerStore is initialised.")
+            else _powerStore = value
+        }
+
+    var dataTransformer: SensorDataTransformer
+        get() = _dataTransformer
+        set(value) {
+            if (this::_dataTransformer.isInitialized) throw IllegalStateException("PowerStore is initialised.")
+            else _dataTransformer = value
+        }
+
+    private lateinit var _powerStore: PowerStore
+    private lateinit var _dataTransformer: SensorDataTransformer
+
 
     private val powerInputStream = PublishSubject.create<Pair<Direction, Float>>()
 
@@ -42,6 +67,28 @@ class AudioFeedbackHandler(
         audioManager.loadSoundTracks()
             .mergeWith(sensor.initialiseSensor())
             .subscribeOn(AndroidSchedulers.mainThread())
+
+    fun calibrate(): Completable =
+        calibrationUseCase.startCalibration()
+            .doOnSuccess { (origin, numOfDataPoints) ->
+                val powerAccumulatorConfig = PowerAccumulatorConfig(
+                    intakePerSecond = numOfDataPoints / calibrationUseCase.calibrationConfig.calibrationDurationInSeconds,
+                )
+                _powerStore = AFPowerStore(
+                    leftPowerAccumulator = AFPowerAccumulator(powerAccumulatorConfig),
+                    rightPowerAccumulator = AFPowerAccumulator(powerAccumulatorConfig)
+                )
+                _dataTransformer = SensorDataTransformer(
+                    frontBackAxisOriginValue = origin.x,
+                    leftRightAxisOriginValue = origin.z,
+                    //TODO check angles
+                    frontBackBoundaries = Boundary(14f, 24f) to Boundary(10f, 20f),
+                    leftRightBoundaries = Boundary(10f, 30f) to Boundary(10f, 30f),
+                    accumulatorConfig = powerAccumulatorConfig
+                )
+            }
+            .subscribeOn(Schedulers.io())
+            .ignoreElement()
 
     /**
      * Prep work
@@ -68,7 +115,7 @@ class AudioFeedbackHandler(
         powerInputStreamDisposable.safeDispose()
         leftChargedIndicatorStreamDisposable.safeDispose()
         rightChargedIndicatorStreamDisposable.safeDispose()
-        powerStore.shutdown()
+        _powerStore.shutdown()
         audioManager.releaseAllTracks()
     }
 
@@ -81,7 +128,7 @@ class AudioFeedbackHandler(
         dataStreamDisposable = sensor.sensorDataStream
             .observeOn(Schedulers.io())
             .map { (x, _, z) ->
-                dataTransformer.run {
+                _dataTransformer.run {
                     transformForFrontBackTracks(z) to transformForLeftRightTracks(x)
                 }
             }
@@ -110,17 +157,17 @@ class AudioFeedbackHandler(
                 val (newDirection, _) = newPowerContext
                 if (preDirection != newDirection) {
                     when (newDirection) {
-                        Direction.LEFT -> powerStore.emptyWith(Direction.RIGHT)
-                        Direction.RIGHT -> powerStore.emptyWith(Direction.LEFT)
+                        Direction.LEFT -> _powerStore.emptyWith(Direction.RIGHT)
+                        Direction.RIGHT -> _powerStore.emptyWith(Direction.LEFT)
                     }
                 }
                 newPowerContext
             }
-            .doOnSubscribe { powerStore.activate() }
+            .doOnSubscribe { _powerStore.activate() }
             .subscribe({ (direction, power) ->
-                powerStore.chargeWith(direction, power)
+                _powerStore.chargeWith(direction, power)
             }, {
-                powerStore.shutdown()
+                _powerStore.shutdown()
             })
     }
 
@@ -130,14 +177,16 @@ class AudioFeedbackHandler(
     private fun subscribeChargedIndicators() {
         leftChargedIndicatorStreamDisposable.safeDispose()
         rightChargedIndicatorStreamDisposable.safeDispose()
-        leftChargedIndicatorStreamDisposable = powerStore.chargedIndicators[0]
+        leftChargedIndicatorStreamDisposable = _powerStore.chargedIndicators[0]
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { audioManager.updateLeftRightTracks(Direction.LEFT) }, {
+                {
+                    audioManager.updateLeftRightTracks(Direction.LEFT)
+                }, {
                     //ignore error
                 })
 
-        rightChargedIndicatorStreamDisposable = powerStore.chargedIndicators[1]
+        rightChargedIndicatorStreamDisposable = _powerStore.chargedIndicators[1]
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { audioManager.updateLeftRightTracks(Direction.RIGHT) }, {

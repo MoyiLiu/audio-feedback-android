@@ -7,18 +7,21 @@ import com.moyi.liu.audiofeedback.domain.model.CalibrationConfig
 import com.moyi.liu.audiofeedback.domain.model.CalibrationResult
 import com.moyi.liu.audiofeedback.domain.model.CalibrationVoiceoverMessage
 import io.reactivex.rxjava3.core.Single
-import java.lang.IllegalArgumentException
+import javax.inject.Inject
 
-class CalibrationUseCase(
+class CalibrationUseCase @Inject constructor(
     private val messageStore: MessageStore,
     private val calibrator: Calibrator,
     private val voiceoverController: VoiceoverController,
-    private val calibrationConfig: CalibrationConfig
+    val calibrationConfig: CalibrationConfig
 ) {
     fun startCalibration(): Single<CalibrationResult> =
         voiceoverController.initialise()
             .andThen(
-                voiceoverController.speakWith(getPreparationMessage())
+                voiceoverController.speakWith(
+                    message = getPreparationMessage(),
+                    timeoutMillis = 6000
+                )
             )
             .andThen(
                 calibrator.countDownAndPrepareSensor(calibrationConfig.preparationTimeInSeconds) {
@@ -28,7 +31,10 @@ class CalibrationUseCase(
                     voiceoverController.speakOut(calibrationConfig.preparationTimeInSeconds.toString())
                 }
             ).andThen(
-                voiceoverController.speakWith(getStartCalibrationMessage())
+                voiceoverController.speakWith(
+                    message = getStartCalibrationMessage(),
+                    timeoutMillis = 6000
+                )
             ).andThen(
                 calibrator.startCalibration(calibrationConfig.calibrationDurationInSeconds) {
                     val second = calibrationConfig.calibrationDurationInSeconds - it
@@ -36,16 +42,17 @@ class CalibrationUseCase(
                 }.doOnSubscribe {
                     voiceoverController.speakOut(calibrationConfig.calibrationDurationInSeconds.toString())
                 }
-            ).toSingle()
+            )
+            .toSingle()
             .doAfterTerminate {
                 voiceoverController.destroy()
             }
 
     private fun getPreparationMessage(): String = messageStore.getMessage(
         CalibrationVoiceoverMessage.Preparation(calibrationConfig.preparationTimeInSeconds)
-    ) ?: throw IllegalArgumentException("Empty voiceover calibration preparation message")
+    )
 
     private fun getStartCalibrationMessage(): String = messageStore.getMessage(
         CalibrationVoiceoverMessage.StartCalibration(calibrationConfig.calibrationDurationInSeconds)
-    ) ?: throw IllegalArgumentException("Empty voiceover start calibration message")
+    )
 }
