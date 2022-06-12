@@ -75,6 +75,7 @@ class AFVoiceoverController(
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onError(utteranceId: String?) {
         utteranceId?.let { id ->
             speeches[id]?.onError(VoiceoverController.Error)
