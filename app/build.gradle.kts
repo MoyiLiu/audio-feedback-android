@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("kotlin-kapt")
+    kotlin("kapt")
     id("dagger.hilt.android.plugin")
 }
 
@@ -70,5 +70,9 @@ dependencies {
 
     androidTestImplementation(Libraries.AndroidTest.JUnitExt)
     androidTestImplementation(Libraries.AndroidTest.EspressoCore)
+}
+
+kapt {
+    correctErrorTypes = true
 }
 

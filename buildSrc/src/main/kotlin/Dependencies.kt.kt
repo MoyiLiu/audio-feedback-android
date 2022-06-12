@@ -13,7 +13,7 @@ object Versions {
 
     object Google {
         const val Material = "1.6.1"
-        const val Hilt = "2.40.5"
+        const val Hilt = "2.42"
     }
 
     object Others {
