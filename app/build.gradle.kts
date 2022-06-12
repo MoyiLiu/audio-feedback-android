@@ -53,8 +53,9 @@ android {
 
 dependencies {
 
-    implementation(Libraries.Kotlin.KotlinStdLib)
+    implementation(Libraries.Kotlin.StdLib)
     implementation(Libraries.Kotlin.KtxCore)
+    implementation(Libraries.Kotlin.CoroutineCore)
     implementation(Libraries.AndroidX.AppCompat)
     implementation(Libraries.Google.Material)
 

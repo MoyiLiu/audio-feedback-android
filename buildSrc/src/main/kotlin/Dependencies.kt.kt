@@ -1,7 +1,11 @@
 object Versions {
-    const val Kotlin = "1.7.0"
-    const val KotlinCore = "1.8.0"
     const val AndroidGradlePlugin = "7.2.1"
+
+    object Kotlin {
+        const val Main = "1.7.0"
+        const val Core = "1.8.0"
+        const val Coroutine = "1.6.2"
+    }
 
     object AndroidX {
         const val AppCompat = "1.4.2"
@@ -29,9 +33,10 @@ object Versions {
 }
 
 object BuildPlugins {
-    const val AndroidGradlePlugin ="com.android.tools.build:gradle:${Versions.AndroidGradlePlugin}"
-    const val KotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.Kotlin}"
-    const val HiltGradlePlugin = "com.google.dagger:hilt-android-gradle-plugin:${Versions.Google.Hilt}"
+    const val AndroidGradlePlugin = "com.android.tools.build:gradle:${Versions.AndroidGradlePlugin}"
+    const val KotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.Kotlin.Main}"
+    const val HiltGradlePlugin =
+        "com.google.dagger:hilt-android-gradle-plugin:${Versions.Google.Hilt}"
 }
 
 object Project {
@@ -44,8 +49,10 @@ object Project {
 
 object Libraries {
     object Kotlin {
-        const val KotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.Kotlin}"
-        const val KtxCore = "androidx.core:core-ktx:${Versions.KotlinCore}"
+        const val StdLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.Kotlin.Main}"
+        const val KtxCore = "androidx.core:core-ktx:${Versions.Kotlin.Core}"
+        const val CoroutineCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.Kotlin.Coroutine}"
+        const val CoroutineAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android::${Versions.Kotlin.Coroutine}"
     }
 
     object AndroidX {
@@ -70,6 +77,7 @@ object Libraries {
 
     object AndroidTest {
         const val JUnitExt = "androidx.test.ext:junit:${Versions.AndroidTest.JUnitExt}"
-        const val EspressoCore = "androidx.test.espresso:espresso-core:${Versions.AndroidTest.EspressoCore}"
+        const val EspressoCore =
+            "androidx.test.espresso:espresso-core:${Versions.AndroidTest.EspressoCore}"
     }
 }
