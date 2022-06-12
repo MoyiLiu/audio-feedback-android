@@ -1,6 +1,8 @@
 package com.moyi.liu.audiofeedback.adapter.audio
 
 import android.content.Context
+import android.media.AudioAttributes
+import android.media.AudioAttributes.*
 import android.media.SoundPool
 import com.moyi.liu.audiofeedback.R
 import com.moyi.liu.audiofeedback.domain.model.AudioContext
@@ -29,7 +31,16 @@ class AFAudioManager(private val ctx: Context) : AudioManager {
 
     override fun loadSoundTracks(): Completable =
         Completable.create { emitter ->
-            soundPool = SoundPool.Builder().setMaxStreams(MAX_STREAMS).build()
+            soundPool = SoundPool.Builder()
+                .setMaxStreams(MAX_STREAMS)
+                .setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(USAGE_ASSISTANCE_ACCESSIBILITY)
+                        .setContentType(CONTENT_TYPE_SONIFICATION)
+                        .setFlags(FLAG_AUDIBILITY_ENFORCED)
+                        .build()
+                )
+                .build()
             frontTrackId = soundPool?.load(ctx, R.raw.guitar_triplet_asc, 1) ?: Int.MIN_VALUE
             backTrackId = soundPool?.load(ctx, R.raw.clarinet_c4, 1) ?: Int.MIN_VALUE
             leftRightTrackId = soundPool?.load(ctx, R.raw.beep, 1) ?: Int.MIN_VALUE

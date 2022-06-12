@@ -59,5 +59,6 @@ class SensorCalibratorTest {
             )
         )
         assertThat(countDownRecord).containsExactly(1, 2, 3)
+        assertThat(sensor.sensorDataStream.hasComplete()).isFalse()
     }
 }
